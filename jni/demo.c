@@ -94,7 +94,6 @@ static long sCurrentCamTrackStartTick = 0;
 static long sNextCamTrackStartTick = 0x7fffffff;
 
 static GLOBJECT *sSuperShapeObjects[SUPERSHAPE_COUNT] = { NULL };
-static GLOBJECT *sGroundPlane = NULL;
 
 
 typedef struct {
@@ -342,123 +341,6 @@ static GLOBJECT * createSuperShape(const float *params)
 }
 
 
-static GLOBJECT * createGroundPlane()
-{
-    const int scale = 4;
-    const int yBegin = -15, yEnd = 15;    // ends are non-inclusive
-    const int xBegin = -15, xEnd = 15;
-    const long triangleCount = (yEnd - yBegin) * (xEnd - xBegin) * 2;
-    const long vertices = triangleCount * 3;
-    GLOBJECT *result;
-    int x, y;
-    long currentVertex, currentQuad;
-
-    result = newGLObject(vertices, 2, 0);
-    if (result == NULL)
-        return NULL;
-
-    currentQuad = 0;
-    currentVertex = 0;
-
-    for (y = yBegin; y < yEnd; ++y)
-    {
-        for (x = xBegin; x < xEnd; ++x)
-        {
-            GLubyte color;
-            int i, a;
-            color = (GLubyte)((randomUInt() & 0x5f) + 81);  // 101 1111
-            for (i = currentVertex * 4; i < (currentVertex + 6) * 4; i += 4)
-            {
-                result->colorArray[i] = color;
-                result->colorArray[i + 1] = color;
-                result->colorArray[i + 2] = color;
-                result->colorArray[i + 3] = 0;
-            }
-
-            // Axis bits for quad triangles:
-            // x: 011100 (0x1c), y: 110001 (0x31)  (clockwise)
-            // x: 001110 (0x0e), y: 100011 (0x23)  (counter-clockwise)
-            for (a = 0; a < 6; ++a)
-            {
-                const int xm = x + ((0x1c >> a) & 1);
-                const int ym = y + ((0x31 >> a) & 1);
-                const float m = (float)(cos(xm * 2) * sin(ym * 4) * 0.75f);
-                result->vertexArray[currentVertex * 2] =
-                    FIXED(xm * scale + m);
-                result->vertexArray[currentVertex * 2 + 1] =
-                    FIXED(ym * scale + m);
-                ++currentVertex;
-            }
-            ++currentQuad;
-        }
-    }
-    return result;
-}
-
-
-static void drawGroundPlane()
-{
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-    glDisable(GL_LIGHTING);
-
-    drawGLObject(sGroundPlane);
-
-    glEnable(GL_LIGHTING);
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
-}
-
-
-static void drawFadeQuad()
-{
-    static const GLfixed quadVertices[] = {
-        -0x10000, -0x10000,
-         0x10000, -0x10000,
-        -0x10000,  0x10000,
-         0x10000, -0x10000,
-         0x10000,  0x10000,
-        -0x10000,  0x10000
-    };
-
-    const int beginFade = sTick - sCurrentCamTrackStartTick;
-    const int endFade = sNextCamTrackStartTick - sTick;
-    const int minFade = beginFade < endFade ? beginFade : endFade;
-
-    if (minFade < 1024)
-    {
-        const GLfixed fadeColor = minFade << 6;
-        glColor4x(fadeColor, fadeColor, fadeColor, 0);
-
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-        glDisable(GL_LIGHTING);
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-        glDisableClientState(GL_COLOR_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glVertexPointer(2, GL_FIXED, 0, quadVertices);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        glEnableClientState(GL_COLOR_ARRAY);
-
-        glMatrixMode(GL_MODELVIEW);
-
-        glEnable(GL_LIGHTING);
-        glDisable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
-    }
-}
-
-
 // Called from the app framework.
 void appInit()
 {
@@ -484,8 +366,6 @@ void appInit()
         sSuperShapeObjects[a] = createSuperShape(sSuperShapeParams[a]);
         assert(sSuperShapeObjects[a] != NULL);
     }
-    sGroundPlane = createGroundPlane();
-    assert(sGroundPlane != NULL);
 }
 
 
@@ -495,7 +375,6 @@ void appDeinit()
     int a;
     for (a = 0; a < SUPERSHAPE_COUNT; ++a)
         freeGLObject(sSuperShapeObjects[a]);
-    freeGLObject(sGroundPlane);
 }
 
 
@@ -776,17 +655,6 @@ void appRender(long tick, int width, int height)
     // Configure environment.
     configureLightAndMaterial();
 
-    // Draw the reflection by drawing models with negated Z-axis.
-    glPushMatrix();
-    drawModels(-1);
-    glPopMatrix();
-
-    // Blend the ground plane to the window.
-    drawGroundPlane();
-
     // Draw all the models normally.
     drawModels(1);
-
-    // Draw fade quad over whole window (when changing cameras).
-    drawFadeQuad();
 }
