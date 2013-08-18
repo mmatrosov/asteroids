@@ -42,8 +42,26 @@
 #define PI 3.1415926535897932f
 #define RANDOM_UINT_MAX 65535
 
+#define  LOG_TAG    "Asteroids"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
+static void printGLString(const char *name, GLenum s) {
+  const char *v = (const char *) glGetString(s);
+  LOGI("GL %s = %s\n", name, v);
+}
+
+static void checkGlError(const char* op) {
+  GLint error = glGetError();
+  for ( ; error; error
+    = glGetError()) {
+      LOGI("after %s() glError (0x%x)\n", op, error);
+  }
+} 
 
 static unsigned long sRandomSeed = 0;
+
+void drawMy();
 
 static void seedRandom(unsigned long seed)
 {
@@ -150,11 +168,11 @@ static void drawGLObject(GLOBJECT *object)
 
     glVertexPointer(object->vertexComponents, GL_FIXED,
                     0, object->vertexArray);
+
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, object->colorArray);
 
-    // Already done in initialization:
-    //glEnableClientState(GL_VERTEX_ARRAY);
-    //glEnableClientState(GL_COLOR_ARRAY);
+//    LOGI("Colors = [%d, %d, %d, %d]", object->colorArray[0], object->colorArray[1], object->colorArray[2], object->colorArray[3]);
+    
 
     if (object->normalArray)
     {
@@ -163,6 +181,7 @@ static void drawGLObject(GLOBJECT *object)
     }
     else
         glDisableClientState(GL_NORMAL_ARRAY);
+
     glDrawArrays(GL_TRIANGLES, 0, object->count);
 }
 
@@ -635,18 +654,32 @@ void drawMy()
     { 100, 0 },
     { 100, 100 },
   };
-  static GLubyte colors[3][3] = {
-    { 255, 255, 255 },
-    { 255, 255, 255 },
-    { 255, 255, 255 },
+  static GLubyte colors[3][4] = {
+    { 64, 64, 64, 0 },
+    { 64, 64, 64, 0 },
+    { 64, 64, 64, 0 },
+  };
+  static GLfloat normals[3][3] = {
+    { 0, 0, 1 },
+    { 0, 0, 1 },
+    { 0, 0, 1 },
   };
 
-  __android_log_print(ANDROID_LOG_INFO, "SanAngeles", "Hello from drawMy");
+//  __android_log_print(ANDROID_LOG_INFO, "SanAngeles", "Hello from drawMy");
 
   glVertexPointer(2, GL_FLOAT, 0, vertices);
-  glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors);
+  checkGlError("glVertexPointer");
+
+  glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+  checkGlError("glColorPointer");
+
+//  glNormalPointer(GL_FLOAT, 0, normals);
+//  glDisableClientState(GL_NORMAL_ARRAY);
+
+  LOGI("Going to glDrawArrays...");
 
   glDrawArrays(GL_TRIANGLES, 0, 3);
+  checkGlError("glDrawArrays");
 }
 
 // Called from the app framework.
@@ -681,7 +714,7 @@ void appRender(long tick, int width, int height)
     configureLightAndMaterial();
 
     // Draw all the models normally.
-    drawModels(1);
+//    drawModels(1);
 
     drawMy();
 }
