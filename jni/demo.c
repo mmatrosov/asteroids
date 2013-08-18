@@ -33,6 +33,8 @@
 #include "shapes.h"
 #include "cams.h"
 
+#include <android/log.h>
+
 
 // Total run length is 20 * camera track base unit length (see cams.h).
 #define RUN_LENGTH  (20 * CAMTRACK_LEN)
@@ -347,14 +349,14 @@ void appInit()
     int a;
 
     glEnable(GL_NORMALIZE);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glShadeModel(GL_FLAT);
+//     glEnable(GL_DEPTH_TEST);
+//     glDisable(GL_CULL_FACE);
+//    glShadeModel(GL_FLAT);
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    glEnable(GL_LIGHT2);
+//     glEnable(GL_LIGHTING);
+//     glEnable(GL_LIGHT0);
+//     glEnable(GL_LIGHT1);
+//     glEnable(GL_LIGHT2);
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -405,11 +407,12 @@ static void prepareFrame(int width, int height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45, (float)width / height, 0.5f, 150);
+//    gluPerspective(45, (float)width / height, 0.5f, 150);
 
     glMatrixMode(GL_MODELVIEW);
-
     glLoadIdentity();
+
+    glTranslatef(0, 0, 1);
 }
 
 
@@ -423,15 +426,15 @@ static void configureLightAndMaterial()
     static GLfixed light2Diffuse[] = { 0x11eb, 0x2b85, 0x23d7, 0x10000 };
     static GLfixed materialSpecular[] = { 0x10000, 0x10000, 0x10000, 0x10000 };
 
-    glLightxv(GL_LIGHT0, GL_POSITION, light0Position);
-    glLightxv(GL_LIGHT0, GL_DIFFUSE, light0Diffuse);
-    glLightxv(GL_LIGHT1, GL_POSITION, light1Position);
-    glLightxv(GL_LIGHT1, GL_DIFFUSE, light1Diffuse);
-    glLightxv(GL_LIGHT2, GL_POSITION, light2Position);
-    glLightxv(GL_LIGHT2, GL_DIFFUSE, light2Diffuse);
-    glMaterialxv(GL_FRONT_AND_BACK, GL_SPECULAR, materialSpecular);
-
-    glMaterialx(GL_FRONT_AND_BACK, GL_SHININESS, 60 << 16);
+//     glLightxv(GL_LIGHT0, GL_POSITION, light0Position);
+//     glLightxv(GL_LIGHT0, GL_DIFFUSE, light0Diffuse);
+//     glLightxv(GL_LIGHT1, GL_POSITION, light1Position);
+//     glLightxv(GL_LIGHT1, GL_DIFFUSE, light1Diffuse);
+//     glLightxv(GL_LIGHT2, GL_POSITION, light2Position);
+//     glLightxv(GL_LIGHT2, GL_DIFFUSE, light2Diffuse);
+//     glMaterialxv(GL_FRONT_AND_BACK, GL_SPECULAR, materialSpecular);
+// 
+//     glMaterialx(GL_FRONT_AND_BACK, GL_SHININESS, 60 << 16);
     glEnable(GL_COLOR_MATERIAL);
 }
 
@@ -625,6 +628,27 @@ static void camTrack()
 }
 
 
+void drawMy()
+{
+  static GLfloat vertices[3][2] = {
+    { 0, 0 },
+    { 100, 0 },
+    { 100, 100 },
+  };
+  static GLubyte colors[3][3] = {
+    { 255, 255, 255 },
+    { 255, 255, 255 },
+    { 255, 255, 255 },
+  };
+
+  __android_log_print(ANDROID_LOG_INFO, "SanAngeles", "Hello from drawMy");
+
+  glVertexPointer(2, GL_FLOAT, 0, vertices);
+  glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors);
+
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
 // Called from the app framework.
 /* The tick is current time in milliseconds, width and height
  * are the image dimensions to be rendered.
@@ -638,6 +662,7 @@ void appRender(long tick, int width, int height)
 
     // Actual tick value is "blurred" a little bit.
     sTick = (sTick + tick - sStartTick) >> 1;
+//    sTick = sStartTick;
 
     // Terminate application after running through the demonstration once.
     if (sTick >= RUN_LENGTH)
@@ -650,11 +675,13 @@ void appRender(long tick, int width, int height)
     prepareFrame(width, height);
 
     // Update the camera position and set the lookat.
-    camTrack();
+    //camTrack();
 
     // Configure environment.
     configureLightAndMaterial();
 
     // Draw all the models normally.
     drawModels(1);
+
+    drawMy();
 }
