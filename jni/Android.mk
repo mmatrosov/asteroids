@@ -8,7 +8,6 @@ LOCAL_CFLAGS := -DANDROID_NDK \
                 -DDISABLE_IMPORTGL
 
 LOCAL_SRC_FILES := \
-    importgl.c \
     demo.c \
     app-android.c \
 

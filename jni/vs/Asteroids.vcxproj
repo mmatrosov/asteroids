@@ -12,16 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\app.h" />
-    <ClInclude Include="..\cams.h" />
-    <ClInclude Include="..\importgl.h" />
-    <ClInclude Include="..\shapes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\app-android.c" />
-    <None Include="..\app-linux.c" />
-    <None Include="..\app-win32.c" />
     <None Include="..\demo.c" />
-    <None Include="..\importgl.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2FC1C055-E142-44FB-AC38-14AC9C8867EE}</ProjectGuid>

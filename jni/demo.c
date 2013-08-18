@@ -27,11 +27,10 @@
 #include <float.h>
 #include <assert.h>
 
-#include "importgl.h"
+//#include "importgl.h"
+#include <GLES/gl.h>
 
 #include "app.h"
-#include "shapes.h"
-#include "cams.h"
 
 #include <android/log.h>
 
@@ -52,6 +51,8 @@ static void checkGlError(const char* op) {
 // Called from the app framework.
 void appInit()
 {
+  LOGI("in appInit");
+
     glEnable(GL_NORMALIZE);
 
     glEnableClientState(GL_VERTEX_ARRAY);

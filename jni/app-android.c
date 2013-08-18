@@ -22,7 +22,7 @@
 #include <time.h>
 #include <android/log.h>
 #include <stdint.h>
-#include "importgl.h"
+
 #include "app.h"
 
 int   gAppAlive   = 1;
@@ -47,7 +47,6 @@ _getTime(void)
 void
 Java_com_example_SanAngeles_DemoRenderer_nativeInit( JNIEnv*  env )
 {
-    importGLInit();
     appInit();
     gAppAlive  = 1;
 }
@@ -65,7 +64,6 @@ void
 Java_com_example_SanAngeles_DemoRenderer_nativeDone( JNIEnv*  env )
 {
     appDeinit();
-    importGLDeinit();
 }
 
 /* This is called to indicate to the render loop that it should

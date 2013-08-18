@@ -18,30 +18,12 @@
     <ClInclude Include="..\app.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\cams.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\importgl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shapes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\app-android.c">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\app-linux.c">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="..\app-win32.c">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="..\demo.c">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="..\importgl.c">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
