@@ -4,8 +4,9 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := sanangeles
 
-LOCAL_CFLAGS := -DANDROID_NDK \
-                -DDISABLE_IMPORTGL
+LOCAL_CPPFLAGS := -std=c++11
+
+LOCAL_CPP_FEATURES += exceptions
 
 LOCAL_SRC_FILES := \
     exports.cpp \

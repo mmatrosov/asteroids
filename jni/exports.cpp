@@ -18,16 +18,17 @@
  * LICENSE-LGPL.txt and LICENSE-BSD.txt for more details.
  */
 #include <jni.h>
+#include <memory>
 
 #include "Application.h"
 
-CApplication* g_pTheApp;
+std::unique_ptr<CApplication> g_pTheApp;
 
 extern "C" { 
   /* Call to initialize the graphics state */
   void Java_com_example_SanAngeles_DemoRenderer_nativeInit(JNIEnv* env)
   {
-    g_pTheApp = new CApplication();
+    g_pTheApp.reset(new CApplication());
   }
 
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint w, jint h )
@@ -38,7 +39,7 @@ extern "C" {
   /* Call to finalize the graphics state */
   void Java_com_example_SanAngeles_DemoRenderer_nativeDone(JNIEnv* env)
   {
-    delete g_pTheApp;
+    g_pTheApp.reset();
   }
 
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouchEvent(JNIEnv* env, jobject thiz, jfloat x, jfloat y)
