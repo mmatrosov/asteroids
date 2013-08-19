@@ -50,7 +50,7 @@ void checkGlError(const char* op) {
 void appInit()
 {
   glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_COLOR_ARRAY);
+//  glEnableClientState(GL_COLOR_ARRAY);
 }
 
 
@@ -68,32 +68,20 @@ void prepareFrame(int width, int height)
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  glEnable(GL_COLOR_MATERIAL);
+  glScalef(1.0f / width, 1.0f / height, 1.0f);
 }
 
 
 void drawMy()
 {
   static GLfloat vertices[3][2] = {
-  { 0, 0 },
-  { 100, 0 },
-  { 100, 100 },
-  };
-  static GLubyte colors[3][4] = {
-  { 64, 64, 64, 0 },
-  { 64, 64, 64, 0 },
-  { 64, 64, 64, 0 },
+    { 0, 0 },
+    { 200, 0 },
+    { 200, 200 },
   };
 
   glVertexPointer(2, GL_FLOAT, 0, vertices);
   checkGlError("glVertexPointer");
-
-  glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-  checkGlError("glColorPointer");
 
   glDrawArrays(GL_TRIANGLES, 0, 3);
   checkGlError("glDrawArrays");
