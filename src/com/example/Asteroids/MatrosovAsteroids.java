@@ -51,7 +51,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class DemoActivity extends Activity {
+public class MatrosovAsteroids extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
