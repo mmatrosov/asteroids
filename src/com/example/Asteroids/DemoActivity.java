@@ -39,7 +39,7 @@
  * Fixing the program to send less polygons to the GPU is left
  * as an exercise to the reader. As always, patches welcomed :-)
  */
-package com.example.SanAngeles;
+package com.example.Asteroids;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -74,7 +74,7 @@ public class DemoActivity extends Activity {
     private GLSurfaceView mGLView;
 
     static {
-        System.loadLibrary("sanangeles");
+        System.loadLibrary("asteroids");
     }
 }
 

@@ -26,37 +26,37 @@ std::unique_ptr<CApplication> g_pTheApp;
 
 extern "C" { 
   /* Call to initialize the graphics state */
-  void Java_com_example_SanAngeles_DemoRenderer_nativeInit(JNIEnv* env)
+  void Java_com_example_Asteroids_DemoRenderer_nativeInit(JNIEnv* env)
   {
     g_pTheApp.reset(new CApplication());
   }
 
-  void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint w, jint h )
+  void Java_com_example_Asteroids_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint w, jint h )
   {
     g_pTheApp->OnResize(w, h);
   }
 
   /* Call to finalize the graphics state */
-  void Java_com_example_SanAngeles_DemoRenderer_nativeDone(JNIEnv* env)
+  void Java_com_example_Asteroids_DemoRenderer_nativeDone(JNIEnv* env)
   {
     g_pTheApp.reset();
   }
 
-  void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouchEvent(JNIEnv* env, jobject thiz, jfloat x, jfloat y)
+  void Java_com_example_Asteroids_DemoGLSurfaceView_nativeTouchEvent(JNIEnv* env, jobject thiz, jfloat x, jfloat y)
   {
     g_pTheApp->OnTouch(x, y);
   }
 
-  void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause(JNIEnv* env)
+  void Java_com_example_Asteroids_DemoGLSurfaceView_nativePause(JNIEnv* env)
   {
   }
 
-  void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume(JNIEnv* env)
+  void Java_com_example_Asteroids_DemoGLSurfaceView_nativeResume(JNIEnv* env)
   {
   }
 
   /* Call to render the next GL frame */
-  void Java_com_example_SanAngeles_DemoRenderer_nativeRender(JNIEnv* env)
+  void Java_com_example_Asteroids_DemoRenderer_nativeRender(JNIEnv* env)
   {
     g_pTheApp->Render();
   }

@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := sanangeles
+LOCAL_MODULE := asteroids
 
 LOCAL_CPPFLAGS := -std=c++11
 
