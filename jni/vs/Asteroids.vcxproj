@@ -11,11 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\app.h" />
+    <ClInclude Include="..\Application.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\app-android.c" />
-    <None Include="..\main.cpp" />
+    <ClCompile Include="..\exports.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Application.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2FC1C055-E142-44FB-AC38-14AC9C8867EE}</ProjectGuid>
@@ -51,6 +53,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>n:\android-ndk-r9\platforms\android-18\arch-x86\usr\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -86,13 +86,9 @@ class DemoGLSurfaceView extends GLSurfaceView {
     }
 
     public boolean onTouchEvent(final MotionEvent event) {
-    	int [] location = new int[2];
-    	getLocationOnScreen(location);
-//    	Log.i("Asteroids", "loc.x=" + location[0] + ", loc.y=" + location[1]);
-    	
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            nativeTouchEvent(event.getRawX() - location[0], event.getRawY() - location[1]);
-        }
+    	int[] loc = new int[2];
+    	getLocationOnScreen(loc);    	
+        nativeTouchEvent(event.getRawX() - loc[0], event.getRawY() - loc[1]);
         return true;
     }
 

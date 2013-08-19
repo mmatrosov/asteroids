@@ -15,16 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\app.h">
+    <ClInclude Include="..\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\app-android.c">
+    <ClCompile Include="..\Application.cpp">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="..\main.cpp">
+    </ClCompile>
+    <ClCompile Include="..\exports.cpp">
       <Filter>Source Files</Filter>
-    </None>
+    </ClCompile>
   </ItemGroup>
 </Project>

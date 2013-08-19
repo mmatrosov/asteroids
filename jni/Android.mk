@@ -8,8 +8,8 @@ LOCAL_CFLAGS := -DANDROID_NDK \
                 -DDISABLE_IMPORTGL
 
 LOCAL_SRC_FILES := \
-    main.cpp \
-    app-android.c \
+    exports.cpp \
+    Application.cpp \
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
 
