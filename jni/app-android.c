@@ -56,7 +56,7 @@ Java_com_example_SanAngeles_DemoRenderer_nativeResize( JNIEnv*  env, jobject  th
 {
     sWindowWidth  = w;
     sWindowHeight = h;
-    __android_log_print(ANDROID_LOG_INFO, "SanAngeles", "resize w=%d h=%d", w, h);
+    __android_log_print(ANDROID_LOG_INFO, "Asteroids", "resize w=%d h=%d", w, h);
 }
 
 /* Call to finalize the graphics state */
@@ -88,13 +88,10 @@ void _resume()
 
 
 void
-Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTogglePauseResume( JNIEnv*  env )
+Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouchEvent( JNIEnv*  env, jobject thiz, jfloat x, jfloat y)
 {
-    sDemoStopped = !sDemoStopped;
-    if (sDemoStopped)
-        _pause();
-    else
-        _resume();
+  __android_log_print(ANDROID_LOG_INFO, "Asteroids", "touch x=%f, y=%f", x, y);
+  onTouch(x, y);
 }
 
 void

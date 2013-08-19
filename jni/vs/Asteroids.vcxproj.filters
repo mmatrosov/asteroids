@@ -23,7 +23,7 @@
     <None Include="..\app-android.c">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\demo.c">
+    <None Include="..\main.cpp">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

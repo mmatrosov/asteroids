@@ -34,6 +34,9 @@
 
 #include <android/log.h>
 
+float g_touchX = 0;
+float g_touchY = 0;
+
 
 #define  LOG_TAG  "Asteroids"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
@@ -66,25 +69,37 @@ void prepareFrame(int width, int height)
 
   glClear(GL_COLOR_BUFFER_BIT);
 
+  // Make OpenGL coordinates match screen cooridnates
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glScalef(1.0f / width, 1.0f / height, 1.0f);
+  glScalef(2.0f / width, -2.0f / height, 1.0f);
+  glTranslatef(-width / 2.0f, -height / 2.0f, 0);
 }
 
 
 void drawMy()
 {
-  static GLfloat vertices[3][2] = {
-    { 0, 0 },
-    { 200, 0 },
-    { 200, 200 },
-  };
+  const float w = 200.0f;
+
+  static GLfloat vertices[4][2];
+
+  float x = g_touchX;
+  float y = g_touchY;
+
+  vertices[0][0] = x;
+  vertices[0][1] = y - w;
+  vertices[1][0] = x;
+  vertices[1][1] = y + w;
+  vertices[2][0] = x - w;
+  vertices[2][1] = y;
+  vertices[3][0] = x + w;
+  vertices[3][1] = y;
 
   glVertexPointer(2, GL_FLOAT, 0, vertices);
   checkGlError("glVertexPointer");
 
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-  checkGlError("glDrawArrays");
+  glDrawArrays(GL_LINES, 0, 4);
+  checkGlError("glDrawArrays");    
 }
 
 // Called from the app framework.
@@ -98,4 +113,10 @@ void appRender(long tick, int width, int height)
 
   //
   drawMy();
+}
+
+void onTouch(float x, float y)
+{
+  g_touchX = x;
+  g_touchY = y;
 }

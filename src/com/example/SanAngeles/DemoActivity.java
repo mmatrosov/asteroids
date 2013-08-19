@@ -48,6 +48,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 
 public class DemoActivity extends Activity {
@@ -85,8 +86,12 @@ class DemoGLSurfaceView extends GLSurfaceView {
     }
 
     public boolean onTouchEvent(final MotionEvent event) {
+    	int [] location = new int[2];
+    	getLocationOnScreen(location);
+//    	Log.i("Asteroids", "loc.x=" + location[0] + ", loc.y=" + location[1]);
+    	
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            nativeTogglePauseResume();
+            nativeTouchEvent(event.getRawX() - location[0], event.getRawY() - location[1]);
         }
         return true;
     }
@@ -108,7 +113,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
     private static native void nativePause();
     private static native void nativeResume();
-    private static native void nativeTogglePauseResume();
+    private static native void nativeTouchEvent(float x, float y);
 }
 
 class DemoRenderer implements GLSurfaceView.Renderer {
