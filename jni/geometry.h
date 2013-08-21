@@ -62,4 +62,7 @@ struct Point
 struct Segment
 {
   Point a, b;
+
+  Segment() {}
+  Segment(const Point& a, const Point& b) : a(a), b(b) {}
 };

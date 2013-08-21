@@ -1,14 +1,15 @@
 #include "Application.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <random>
+
 #include "gl.h"
 #include "Utils.h"
 
-#define _USE_MATH_DEFINES
-#include "math.h"
-
 //////////////////////////////////////////////////////////////////////////
 ///
-CApplication::CApplication()
+CApplication::CApplication() : m_maxAsteroids(4)
 {
   glEnableClientState(GL_VERTEX_ARRAY);
 }
@@ -43,6 +44,7 @@ void CApplication::OnResize(int width, int height)
 
   InitMenuShapes();
   InitShip();
+  InitAsteroids();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -66,6 +68,7 @@ void CApplication::Render()
   RenderTouch();
   RenderMenu();
   RenderShip();
+  RenderAsteroids();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -101,7 +104,61 @@ void CApplication::InitShip()
 {
   m_pShip.reset(new CShip());
 
+  // Place to the center of the screen
   m_pShip->MoveBy(Vector(m_width / 2.0f, m_height / 2.0f));
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::InitAsteroids()
+{
+  const int vertsCount = 10;
+  const float maxRadius = 100;
+
+  std::vector<Point> verts(vertsCount);
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<float> radiusDist(0, maxRadius);
+  std::uniform_real_distribution<float> offsetDist(0, static_cast<float>(m_width));
+
+  for (int i = 0; i < m_maxAsteroids; ++i)
+  {
+    // Init vertices
+    for (int j = 0; j < vertsCount; ++j)
+    {
+      float radius = radiusDist(gen);
+      verts[j].x = static_cast<float>(radius * cos(2 * M_PI * j / vertsCount));
+      verts[j].y = static_cast<float>(radius * sin(2 * M_PI * j / vertsCount));
+    }
+
+    // Construct segments
+    std::vector<Segment> segments;
+
+    auto pV1 = verts.end() - 1;
+    auto pV2 = verts.begin();
+
+    for ( ; pV2 != verts.end(); pV1 = pV2++)
+    {
+      segments.push_back(Segment(*pV1, *pV2));
+    }
+
+    CShape asteroid(std::move(segments));
+
+    // Move asteroid randomly, but make sure it doesn't collide with the ship
+    bool collision = true;
+    while (collision)
+    {
+      asteroid.MoveBy(Vector(offsetDist(gen), offsetDist(gen)));
+      collision = (asteroid.GetCenter() - m_pShip->GetCenter()).len() <= asteroid.GetRadius() + m_pShip->GetRadius();
+    };
+
+    // Add an asteroid
+    m_asteroids.push_back(std::move(asteroid));
+  }
+
+  // Next turn will contain one more asteroid
+  m_maxAsteroids++;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -119,6 +176,7 @@ void CApplication::HandleControls()
     m_pShip->ApplyAcceleration(m_joystickDir);
   }
 
+  // ToDo: use actual FPS here
   float time = 1.0f / 60;
 
   m_pShip->MoveBy(time);
@@ -186,4 +244,14 @@ void CApplication::RenderMenu()
 void CApplication::RenderShip()
 {
   m_pShip->Draw();
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::RenderAsteroids()
+{
+  for (const CShape& asteroid : m_asteroids)
+  {
+    asteroid.Draw();
+  }
 }

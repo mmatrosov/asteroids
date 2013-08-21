@@ -21,6 +21,7 @@ public:
 private:
   void InitMenuShapes();
   void InitShip();
+  void InitAsteroids();
 
   void HandleControls();
 
@@ -28,6 +29,9 @@ private:
   void RenderTouch();
   void RenderMenu();
   void RenderShip();
+  void RenderAsteroids();
+
+  int m_maxAsteroids;
 
   int m_width;
   int m_height;
@@ -39,4 +43,5 @@ private:
 
   std::unique_ptr<CShip> m_pShip;
   std::unique_ptr<CShape> m_pJoystick;
+  std::vector<CShape> m_asteroids;
 };
