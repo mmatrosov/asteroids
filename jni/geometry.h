@@ -35,6 +35,11 @@ struct Vector
     return Vector(x / a, y / a);
   }
 
+  Vector operator-(Vector rhs) const
+  {
+    return Vector(x - rhs.x, y - rhs.y);
+  }
+
   Vector& operator+=(const Vector& rhs)
   {
     x += rhs.x;
@@ -51,14 +56,25 @@ struct Point
   Point(float x, float y) : x(x), y(y) {}
   Point(const Vector& that) : x(that.x), y(that.y) {}
 
+  Vector ToVector() const
+  {
+    return Vector(x, y);
+  }
+
   Point& operator+=(const Vector& v)
   {
     x += v.x;
     y += v.y;
     return *this;
   }
+  Point& operator-=(const Vector& v)
+  {
+    x -= v.x;
+    y -= v.y;
+    return *this;
+  }
 
-  Vector operator-(const Point& rhs)
+  Vector operator-(const Point& rhs) const
   {
     return Vector(x - rhs.x, y - rhs.y);
   }
@@ -71,3 +87,7 @@ struct Segment
   Segment() {}
   Segment(const Point& a, const Point& b) : a(a), b(b) {}
 };
+
+float cross(const Vector& a, const Vector& b);
+
+bool Intersects(const Segment& s1, const Segment& s2);

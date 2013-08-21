@@ -18,6 +18,29 @@ float deg2rad(float deg)
 
 //////////////////////////////////////////////////////////////////////////
 ///
+bool Intersects(const CShape& shape1, const CShape& shape2)
+{
+  if ((shape1.GetCenter() - shape2.GetCenter()).len() >= shape1.GetRadius() + shape2.GetRadius())
+  {
+    return false;
+  }
+
+  for (const Segment& seg1 : shape1.GetSegments())
+  {
+    for (const Segment& seg2 : shape2.GetSegments())
+    {
+      if (Intersects(seg1, seg2))
+      {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
 CShape::CShape(std::vector<Segment>&& segments)
 {
   m_segments = std::move(segments);
@@ -117,11 +140,19 @@ void CShape::Draw() const
 
 //////////////////////////////////////////////////////////////////////////
 ///
+const std::vector<Segment>& CShape::GetSegments() const
+{
+  return m_segments;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
 CShip::CShip() : 
   CShape(ConstructSegments()), 
   m_mass(10), m_friction(10)
 {
   m_angle = PI / 2;
+  m_areRotatedSegmentsValid = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -160,6 +191,7 @@ std::vector<Segment> CShip::ConstructSegments() const
 void CShip::SetAngle(float angle)
 {
   m_angle = angle;
+  m_areRotatedSegmentsValid = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -178,17 +210,65 @@ void CShip::ApplyFriction(float time)
 
 //////////////////////////////////////////////////////////////////////////
 ///
+void CShip::MoveBy(Vector offset)
+{
+  CShape::MoveBy(offset);
+  m_areRotatedSegmentsValid = false;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CShip::MoveBy(float time)
+{
+  CShape::MoveBy(time);
+  m_areRotatedSegmentsValid = false;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
 void CShip::Draw() const
 {
   Point center = GetCenter();
 
   glPushMatrix();
-
+ 
   glTranslatef(center.x, center.y, 0);
   glRotatef(rad2deg(m_angle), 0, 0, -1);
   glTranslatef(-center.x, -center.y, 0);
 
-  CShape::Draw();
-
+  CShape::Draw(); 
   glPopMatrix(); 
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+const std::vector<Segment>& CShip::GetSegments() const
+{
+  if (!m_areRotatedSegmentsValid)
+  {
+    // Get raw unrotated segments
+    m_rotatedSegments = CShape::GetSegments();
+
+    const float c = cos(m_angle);
+    const float s = -sin(m_angle);  // Negated since y axis points downwards
+
+    Vector r = GetCenter().ToVector();
+
+    auto rotate = [&] (Point& p)
+    {
+      p -= r;
+      p = Point(p.x * c - p.y * s, p.x * s + p.y * c);
+      p += r;
+    };
+
+    for (Segment& s : m_rotatedSegments)
+    {
+      rotate(s.a);
+      rotate(s.b);
+    }
+
+    m_areRotatedSegmentsValid = true;
+  }
+
+  return m_rotatedSegments;
 }

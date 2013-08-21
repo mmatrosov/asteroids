@@ -15,6 +15,8 @@ CApplication::CApplication() : m_maxAsteroids(4)
   glEnableClientState(GL_VERTEX_ARRAY);
 
   m_isInitialized = false;
+
+  m_collision = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -65,8 +67,11 @@ void CApplication::OnTouch(float x, float y)
 ///
 void CApplication::Render()
 {
-  HandleControls();
-  MoveObjects();
+  if (!m_collision)
+  {
+    HandleControls();
+    MoveObjects();
+  }
 
   PrepareFrame();
 
@@ -74,6 +79,8 @@ void CApplication::Render()
   RenderMenu();
   RenderShip();
   RenderAsteroids();
+
+  HandleCollisions();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -141,6 +148,8 @@ void CApplication::InitAsteroids()
   std::uniform_real_distribution<float> radiusDist(0, maxRadius);
   std::uniform_real_distribution<float> offsetDist(0, static_cast<float>(m_width));
   std::uniform_real_distribution<float> angleDist(0, static_cast<float>(2 * PI));
+
+  m_asteroids.clear();
 
   for (int i = 0; i < m_maxAsteroids; ++i)
   {
@@ -290,5 +299,19 @@ void CApplication::RenderAsteroids()
   for (const CShape& asteroid : m_asteroids)
   {
     asteroid.Draw();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::HandleCollisions()
+{
+  for (const CShape& asteroid : m_asteroids)
+  {
+    if (Intersects(asteroid, *m_pShip))
+    {
+      m_collision = true;
+      break;
+    }
   }
 }

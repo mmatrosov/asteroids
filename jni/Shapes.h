@@ -16,10 +16,12 @@ public:
 
   void SetVelocity(Vector velocity);
 
-  void MoveBy(Vector offset);
-  void MoveBy(float time);
+  virtual void MoveBy(Vector offset);
+  virtual void MoveBy(float time);
 
   virtual void Draw() const;
+
+  virtual const std::vector<Segment>& GetSegments() const;
 
 protected:
   Vector m_velocity;
@@ -42,7 +44,12 @@ public:
 
   void ApplyFriction(float time);
 
+  virtual void MoveBy(Vector offset);
+  virtual void MoveBy(float time);
+
   virtual void Draw() const;
+
+  virtual const std::vector<Segment>& GetSegments() const;
 
 private:
   std::vector<Segment> ConstructSegments() const;
@@ -51,4 +58,9 @@ private:
   const float m_friction;
 
   float m_angle;
+
+  mutable bool m_areRotatedSegmentsValid;
+  mutable std::vector<Segment> m_rotatedSegments;
 };
+
+bool Intersects(const CShape& shape1, const CShape& shape2);

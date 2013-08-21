@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\exports.cpp" />
+    <ClCompile Include="..\geometry.cpp" />
     <ClCompile Include="..\Shapes.cpp" />
   </ItemGroup>
   <ItemGroup>

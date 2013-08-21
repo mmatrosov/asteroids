@@ -13,6 +13,7 @@ LOCAL_SRC_FILES := \
     exports.cpp \
     Application.cpp \
     Shapes.cpp \
+    geometry.cpp \
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
 

@@ -33,6 +33,8 @@ private:
   void RenderShip();
   void RenderAsteroids();
 
+  void HandleCollisions();
+
   bool m_isInitialized;
 
   int m_maxAsteroids;
@@ -44,6 +46,8 @@ private:
   float m_touchY;
 
   Vector m_joystickDir;
+
+  bool m_collision;
 
   std::unique_ptr<CShip> m_pShip;
   std::unique_ptr<CShape> m_pJoystick;
