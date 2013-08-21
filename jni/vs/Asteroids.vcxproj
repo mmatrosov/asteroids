@@ -12,12 +12,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Application.h" />
+    <ClInclude Include="..\geometry.h" />
+    <ClInclude Include="..\gl.h" />
+    <ClInclude Include="..\Shapes.h" />
+    <ClInclude Include="..\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\exports.cpp" />
+    <ClCompile Include="..\Shapes.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Application.cpp" />
+    <ClCompile Include="..\Application.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2FC1C055-E142-44FB-AC38-14AC9C8867EE}</ProjectGuid>
@@ -53,7 +60,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>n:\android-ndk-r9\platforms\android-18\arch-x86\usr\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

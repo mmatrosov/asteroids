@@ -5,14 +5,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Asteroids", "Asteroids.vcxp
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
+		Dummy|Win32 = Dummy|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2FC1C055-E142-44FB-AC38-14AC9C8867EE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2FC1C055-E142-44FB-AC38-14AC9C8867EE}.Debug|Win32.Build.0 = Debug|Win32
-		{2FC1C055-E142-44FB-AC38-14AC9C8867EE}.Release|Win32.ActiveCfg = Release|Win32
-		{2FC1C055-E142-44FB-AC38-14AC9C8867EE}.Release|Win32.Build.0 = Release|Win32
+		{2FC1C055-E142-44FB-AC38-14AC9C8867EE}.Dummy|Win32.ActiveCfg = Debug|Win32
+		{2FC1C055-E142-44FB-AC38-14AC9C8867EE}.Dummy|Win32.Build.0 = Debug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
