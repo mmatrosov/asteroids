@@ -12,7 +12,10 @@ public:
   int GetScreenHeight() const;
 
   void OnResize(int width, int height);
-  void OnTouch(float x, float y);
+  void OnTouchDown(int id, float x, float y);
+  void OnTouchMove(int id, float x, float y);
+  void OnTouchUp(int id);
+  void OnTouchCancel();
 
   void Render();
 
@@ -40,14 +43,13 @@ private:
   int m_width;
   int m_height;
 
-  float m_touchX;
-  float m_touchY;
-
   Vector m_joystickDir;
 
   bool m_collision;
 
   double m_collisionTime;
+
+  std::map<int, Point> m_pointers;
 
   std::unique_ptr<CShip> m_pShip;
   std::unique_ptr<CShape> m_pJoystick;

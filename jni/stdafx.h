@@ -31,6 +31,7 @@
 #include <memory>
 #include <cmath>
 #include <vector>
+#include <map>
 #include <random>
 
 // Stuff

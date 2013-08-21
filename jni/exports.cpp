@@ -44,9 +44,30 @@ extern "C" {
     g_pTheApp.reset();
   }
 
-  void Java_com_example_Asteroids_DemoGLSurfaceView_nativeTouchEvent(JNIEnv* env, jobject thiz, jfloat x, jfloat y)
+  void Java_com_example_Asteroids_DemoGLSurfaceView_nativeOnTouchDown(JNIEnv* env, jobject thiz, jint id, jfloat x, jfloat y)
   {
-    g_pTheApp->OnTouch(x, y);
+    g_pTheApp->OnTouchDown(id, x, y);
+  }
+
+  void Java_com_example_Asteroids_DemoGLSurfaceView_nativeOnTouchMove(JNIEnv* env, jobject thiz, jint id, jfloat x, jfloat y)
+  {
+    g_pTheApp->OnTouchMove(id, x, y);
+  }
+
+  void Java_com_example_Asteroids_DemoGLSurfaceView_nativeOnTouchUp(JNIEnv* env, jobject thiz, jint id)
+  {
+    g_pTheApp->OnTouchUp(id);
+  }
+
+  void Java_com_example_Asteroids_DemoGLSurfaceView_nativeOnTouchCancel(JNIEnv* env, jobject thiz, jint id)
+  {
+    g_pTheApp->OnTouchCancel();
+  }
+
+  /* Call to render the next GL frame */
+  void Java_com_example_Asteroids_DemoRenderer_nativeRender(JNIEnv* env)
+  {
+    g_pTheApp->Render();
   }
 
   void Java_com_example_Asteroids_DemoGLSurfaceView_nativePause(JNIEnv* env)
@@ -55,12 +76,6 @@ extern "C" {
 
   void Java_com_example_Asteroids_DemoGLSurfaceView_nativeResume(JNIEnv* env)
   {
-  }
-
-  /* Call to render the next GL frame */
-  void Java_com_example_Asteroids_DemoRenderer_nativeRender(JNIEnv* env)
-  {
-    g_pTheApp->Render();
   }
 }
 

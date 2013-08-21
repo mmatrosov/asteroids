@@ -8,9 +8,7 @@ double GetTime()
 #ifndef _MSC_VER
   timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
-  double time = now.tv_sec + now.tv_nsec / 1e9;
-  LOGI("GetTime returning %g", time);
-  return time;
+  return now.tv_sec + now.tv_nsec / 1e9;
 #else
   return 0;
 #endif
@@ -65,12 +63,35 @@ void CApplication::OnResize(int width, int height)
 
 //////////////////////////////////////////////////////////////////////////
 ///
-void CApplication::OnTouch(float x, float y)
+void CApplication::OnTouchDown(int id, float x, float y)
 {
-  m_touchX = x;
-  m_touchY = y;
+  m_pointers[id] = Point(x, y);
+}
 
-  m_joystickDir = Point(x, y) - m_pJoystick->GetCenter();
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::OnTouchMove(int id, float x, float y)
+{
+  m_pointers[id] = Point(x, y);
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::OnTouchUp(int id)
+{
+  auto p = m_pointers.find(id);
+
+  if (p != m_pointers.end())
+  {
+    m_pointers.erase(p);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::OnTouchCancel()
+{
+  m_pointers.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -90,7 +111,7 @@ void CApplication::Render()
   {
     HandleControls();
     MoveObjects();
-    HandleCollisions();
+//    HandleCollisions();
   }
 
   PrepareFrame();
@@ -219,18 +240,22 @@ void CApplication::InitAsteroids()
 ///
 void CApplication::HandleControls()
 {
-  if (m_joystickDir.len() < m_pJoystick->GetRadius())
+  for (const auto& ptr : m_pointers)
   {
-    if (m_joystickDir.len() > 0)
+    Vector dir = ptr.second - m_pJoystick->GetCenter();
+
+    if (dir.len() < m_pJoystick->GetRadius())
     {
       // Negate angle since axis y is pointing downwards
-      m_pShip->SetAngle(-m_joystickDir.angle());
+      m_pShip->SetAngle(-dir.angle());
+
+      m_pShip->ApplyAcceleration(dir);
+
+      // Only first pointer is taken into account. It is unlikely that joystick will be
+      // manipulated with more than one finger.
+      break;
     }
-
-    m_pShip->ApplyAcceleration(m_joystickDir);
   }
-
-  m_joystickDir = Vector();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -272,28 +297,30 @@ void CApplication::PrepareFrame()
 ///
 void CApplication::RenderTouch()
 {
+  // Seems like this function is causing an error eventually:
+  // A/libc(5821): Fatal signal 11 (SIGSEGV) at 0x00070013 (code=1)
+  return;
+
   const float w = 200.0f;
 
-  static GLfloat vertices[4][2];
+  static GLfloat vertices[4][2] = { 0 };
 
-  float x = m_touchX;
-  float y = m_touchY;
-
-  vertices[0][0] = x;
-  vertices[0][1] = y - w;
-  vertices[1][0] = x;
-  vertices[1][1] = y + w;
-  vertices[2][0] = x - w;
-  vertices[2][1] = y;
-  vertices[3][0] = x + w;
-  vertices[3][1] = y;
+  vertices[0][1] = -w;
+  vertices[1][1] = w;
+  vertices[2][0] = -w;
+  vertices[3][0] = w;
 
   glVertexPointer(2, GL_FLOAT, 0, vertices);
 
-  glDrawArrays(GL_LINES, 0, 4);
+  for (const auto& ptr : m_pointers)
+  {
+    Point p = ptr.second;
 
-  m_touchX = -1;
-  m_touchY = -1;
+    glPushMatrix();
+    glTranslatef(p.x, p.y, 0);
+    glDrawArrays(GL_LINES, 0, 4);
+    glPopMatrix();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////

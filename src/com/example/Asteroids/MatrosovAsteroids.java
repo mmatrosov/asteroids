@@ -94,9 +94,52 @@ class DemoGLSurfaceView extends GLSurfaceView {
     }
 
     public boolean onTouchEvent(final MotionEvent event) {
-    	int[] loc = new int[2];
-    	getLocationOnScreen(loc);    	
-        nativeTouchEvent(event.getRawX() - loc[0], event.getRawY() - loc[1]);
+
+//        	android.util.Log.i("Asteroids", "action = " + event.getActionMasked());
+      
+    	switch (event.getActionMasked())
+    	{
+    	case MotionEvent.ACTION_DOWN:
+    	{
+    		int id = event.getPointerId(0);
+    		nativeOnTouchDown(id, event.getX(0), event.getY(0));
+    		break;
+    	}
+    	case MotionEvent.ACTION_POINTER_DOWN:
+    	{
+    		int i = event.getActionIndex();
+    		int id = event.getPointerId(i);
+    		nativeOnTouchDown(id, event.getX(i), event.getY(i));
+    		break;
+    	}
+    	case MotionEvent.ACTION_MOVE:
+    	{
+    		for (int i = 0; i < event.getPointerCount(); i++)
+    		{
+        		nativeOnTouchMove(event.getPointerId(i), event.getX(i), event.getY(i));
+    		}
+    		break;
+    	}
+    	case MotionEvent.ACTION_POINTER_UP:
+    	{
+    		int i = event.getActionIndex();
+    		int id = event.getPointerId(i);
+    		nativeOnTouchUp(id);       		
+    		break;
+    	}
+    	case MotionEvent.ACTION_UP:
+    	{
+    		int id = event.getPointerId(0);
+    		nativeOnTouchUp(id);
+    		break;
+    	}
+    	case MotionEvent.ACTION_CANCEL:
+    	{
+    		nativeOnTouchCancel();
+    		break;
+    	}
+    	}
+
         return true;
     }
 
@@ -117,7 +160,10 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
     private static native void nativePause();
     private static native void nativeResume();
-    private static native void nativeTouchEvent(float x, float y);
+    private static native void nativeOnTouchDown(int id, float x, float y);
+    private static native void nativeOnTouchMove(int id, float x, float y);
+    private static native void nativeOnTouchUp(int id);
+    private static native void nativeOnTouchCancel();
 }
 
 class DemoRenderer implements GLSurfaceView.Renderer {

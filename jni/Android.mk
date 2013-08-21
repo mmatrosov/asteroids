@@ -17,6 +17,4 @@ LOCAL_SRC_FILES := \
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
 
-$(LOCAL_LDLIBS) += libsupc++.a
-
 include $(BUILD_SHARED_LIBRARY)
