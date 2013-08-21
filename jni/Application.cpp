@@ -23,6 +23,7 @@ CApplication::~CApplication()
 ///
 void CApplication::OnResize(int width, int height)
 {
+  // Assumed to occur only once at application start since the orientation is locked
   m_width = width;
   m_height = height;
 
@@ -42,10 +43,10 @@ void CApplication::OnTouch(float x, float y)
 
   if (r.len() < m_pJoystick->GetRadius())
   {
-    float angle = -r.angle();
-    LOGI("angle=%g", angle);
     // Negate angle since axis y is pointing downwards
-    m_pShip->SetAngle(angle);
+    m_pShip->SetAngle(-r.angle());
+
+    m_pShip->SetVelocity(r);
   }
 }
 
@@ -53,6 +54,8 @@ void CApplication::OnTouch(float x, float y)
 ///
 void CApplication::Render()
 {
+  m_pShip->MoveBy(1.0f / 60);
+
   PrepareFrame();
 
   RenderTouch();
@@ -83,6 +86,7 @@ void CApplication::InitMenuShapes()
 
   m_pJoystick.reset(new CShape(std::move(segments)));
 
+  // Place joystick in the bottom left corner
   m_pJoystick->MoveBy(Vector(radius + border, m_height - radius - border));
 }
 

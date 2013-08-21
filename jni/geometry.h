@@ -6,6 +6,7 @@ struct Vector
 {
   float x, y;
 
+  Vector() : x(0), y(0) {}
   Vector(float x, float y) : x(x), y(y) {}
 
   float len() const
@@ -16,6 +17,12 @@ struct Vector
   float angle() const
   {
     return static_cast<float>(atan2(y, x));
+  }
+
+  Vector operator*(float a)
+  {
+    Vector v(x * a, y * a);
+    return v;
   }
 };
 

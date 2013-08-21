@@ -33,25 +33,10 @@ CShape::CShape(std::vector<Segment>&& segments)
 
 //////////////////////////////////////////////////////////////////////////
 ///
-void CShape::MoveBy(Vector v)
+Vector CShape::GetVelocity() const
 {
-  for (Segment& s : m_segments)
-  {
-    s.a += v;
-    s.b += v;
-  }
-
-  m_center += v;
+  return m_velocity;
 }
-
-//////////////////////////////////////////////////////////////////////////
-///
-void CShape::Draw() const
-{
-  glVertexPointer(2, GL_FLOAT, 0, &m_segments[0]);
-  glDrawArrays(GL_LINES, 0, m_segments.size() * 2);
-}
-
 //////////////////////////////////////////////////////////////////////////
 ///
 Point CShape::GetCenter() const
@@ -64,6 +49,41 @@ Point CShape::GetCenter() const
 float CShape::GetRadius() const
 {
   return m_radius;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CShape::SetVelocity(Vector velocity)
+{
+  m_velocity = velocity;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CShape::MoveBy(Vector offset)
+{
+  for (Segment& s : m_segments)
+  {
+    s.a += offset;
+    s.b += offset;
+  }
+
+  m_center += offset;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CShape::MoveBy(float time)
+{
+  MoveBy(m_velocity * time);
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CShape::Draw() const
+{
+  glVertexPointer(2, GL_FLOAT, 0, &m_segments[0]);
+  glDrawArrays(GL_LINES, 0, m_segments.size() * 2);
 }
 
 //////////////////////////////////////////////////////////////////////////

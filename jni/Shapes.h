@@ -10,15 +10,20 @@ class CShape
 public:
   CShape(std::vector<Segment>&& segments);
 
-  void MoveBy(Vector v);
-
-  virtual void Draw() const;
-
+  Vector GetVelocity() const;
   Point GetCenter() const;
   float GetRadius() const;
 
+  void SetVelocity(Vector velocity);
+
+  void MoveBy(Vector offset);
+  void MoveBy(float time);
+
+  virtual void Draw() const;
+
 private:
   std::vector<Segment> m_segments;
+  Vector m_velocity;
   Point m_center;
   float m_radius;
 };
