@@ -1,6 +1,5 @@
 #include "Application.h"
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include <random>
 
@@ -11,7 +10,11 @@
 ///
 CApplication::CApplication() : m_maxAsteroids(4)
 {
+  LOGI("In CApplication()");
+
   glEnableClientState(GL_VERTEX_ARRAY);
+
+  m_isInitialized = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,13 +41,14 @@ int CApplication::GetScreenHeight() const
 ///
 void CApplication::OnResize(int width, int height)
 {
-  // Assumed to occur only once at application start since the orientation is locked
   m_width = width;
   m_height = height;
 
-  InitMenuShapes();
-  InitShip();
-  InitAsteroids();
+  // Initialization is done once screen dimensions are known
+  if (!m_isInitialized)
+  {
+    Initialize();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,6 +66,7 @@ void CApplication::OnTouch(float x, float y)
 void CApplication::Render()
 {
   HandleControls();
+  MoveObjects();
 
   PrepareFrame();
 
@@ -69,6 +74,19 @@ void CApplication::Render()
   RenderMenu();
   RenderShip();
   RenderAsteroids();
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::Initialize()
+{
+  LOGI("In Initialize()");
+
+  InitMenuShapes();
+  InitShip();
+  InitAsteroids();
+
+  m_isInitialized = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -85,10 +103,8 @@ void CApplication::InitMenuShapes()
 
   for (int i = 0; i < count; ++i)
   {
-    s.a.x = static_cast<float>(radius * cos(2 * M_PI * i / count));
-    s.a.y = static_cast<float>(radius * sin(2 * M_PI * i / count));
-    s.b.x = static_cast<float>(radius * cos(2 * M_PI * (i + 1) / count));
-    s.b.y = static_cast<float>(radius * sin(2 * M_PI * (i + 1) / count));
+    s.a = Vector::FromPolar(radius, 2 * PI * i / count);
+    s.b = Vector::FromPolar(radius, 2 * PI * (i + 1) / count);
     segments.push_back(s);
   }
 
@@ -114,13 +130,17 @@ void CApplication::InitAsteroids()
 {
   const int vertsCount = 10;
   const float maxRadius = 100;
+  const float speed = 100;
+  const float safeSpace = 200;
 
   std::vector<Point> verts(vertsCount);
 
+  // Asteroids are generated as star polygons
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<float> radiusDist(0, maxRadius);
   std::uniform_real_distribution<float> offsetDist(0, static_cast<float>(m_width));
+  std::uniform_real_distribution<float> angleDist(0, static_cast<float>(2 * PI));
 
   for (int i = 0; i < m_maxAsteroids; ++i)
   {
@@ -128,8 +148,7 @@ void CApplication::InitAsteroids()
     for (int j = 0; j < vertsCount; ++j)
     {
       float radius = radiusDist(gen);
-      verts[j].x = static_cast<float>(radius * cos(2 * M_PI * j / vertsCount));
-      verts[j].y = static_cast<float>(radius * sin(2 * M_PI * j / vertsCount));
+      verts[j] = Vector::FromPolar(radius, 2 * PI * j / vertsCount);
     }
 
     // Construct segments
@@ -147,11 +166,19 @@ void CApplication::InitAsteroids()
 
     // Move asteroid randomly, but make sure it doesn't collide with the ship
     bool collision = true;
+
     while (collision)
     {
       asteroid.MoveBy(Vector(offsetDist(gen), offsetDist(gen)));
-      collision = (asteroid.GetCenter() - m_pShip->GetCenter()).len() <= asteroid.GetRadius() + m_pShip->GetRadius();
+
+      float centerLen = (asteroid.GetCenter() - m_pShip->GetCenter()).len();
+      float minLen = asteroid.GetRadius() + m_pShip->GetRadius() + safeSpace;
+
+      collision = centerLen <= minLen;
     };
+
+    // Set randomly directed velocity
+    asteroid.SetVelocity(Vector::FromPolar(speed, angleDist(gen)));
 
     // Add an asteroid
     m_asteroids.push_back(std::move(asteroid));
@@ -176,13 +203,23 @@ void CApplication::HandleControls()
     m_pShip->ApplyAcceleration(m_joystickDir);
   }
 
+  m_joystickDir = Vector();
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::MoveObjects()
+{
   // ToDo: use actual FPS here
   float time = 1.0f / 60;
 
   m_pShip->MoveBy(time);
   m_pShip->ApplyFriction(time);
 
-  m_joystickDir = Vector();
+  for (CShape& asteroid : m_asteroids)
+  {
+    asteroid.MoveBy(time);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////

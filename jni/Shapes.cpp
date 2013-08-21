@@ -4,17 +4,16 @@
 #include "Utils.h"
 #include "Globals.h"
 
-#define _USE_MATH_DEFINES
 #include "math.h"
 
 float rad2deg(float rad)
 {
-  return static_cast<float>(rad / M_PI * 180);
+  return static_cast<float>(rad / PI * 180);
 }
 
 float deg2rad(float deg)
 {
-  return static_cast<float>(deg / 180 * M_PI);
+  return static_cast<float>(deg / 180 * PI);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -122,7 +121,7 @@ CShip::CShip() :
   CShape(ConstructSegments()), 
   m_mass(10), m_friction(10)
 {
-  m_angle = static_cast<float>(M_PI);
+  m_angle = PI / 2;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -2,12 +2,19 @@
 
 #include <math.h>
 
+const float PI = 3.14159265358979323846f;
+
 struct Vector
 {
   float x, y;
 
   Vector() : x(0), y(0) {}
   Vector(float x, float y) : x(x), y(y) {}
+
+  static Vector FromPolar(float rho, float phi)
+  {
+    return Vector(rho * cos(phi), rho * sin(phi));
+  }
 
   float len() const
   {
@@ -19,15 +26,13 @@ struct Vector
     return static_cast<float>(atan2(y, x));
   }
 
-  Vector operator*(float a)
+  Vector operator*(float a) const
   {
-    Vector v(x * a, y * a);
-    return v;
+    return Vector(x * a, y * a);
   }
-  Vector operator/(float a)
+  Vector operator/(float a) const
   {
-    Vector v(x / a, y / a);
-    return v;
+    return Vector(x / a, y / a);
   }
 
   Vector& operator+=(const Vector& rhs)
@@ -44,6 +49,7 @@ struct Point
 
   Point() : x(0), y(0) {}
   Point(float x, float y) : x(x), y(y) {}
+  Point(const Vector& that) : x(that.x), y(that.y) {}
 
   Point& operator+=(const Vector& v)
   {
@@ -54,8 +60,7 @@ struct Point
 
   Vector operator-(const Point& rhs)
   {
-    Vector v(x - rhs.x, y - rhs.y);
-    return v;
+    return Vector(x - rhs.x, y - rhs.y);
   }
 };
 

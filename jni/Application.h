@@ -19,17 +19,21 @@ public:
   void Render();
 
 private:
+  void Initialize();
   void InitMenuShapes();
   void InitShip();
   void InitAsteroids();
 
   void HandleControls();
+  void MoveObjects();
 
   void PrepareFrame();
   void RenderTouch();
   void RenderMenu();
   void RenderShip();
   void RenderAsteroids();
+
+  bool m_isInitialized;
 
   int m_maxAsteroids;
 
