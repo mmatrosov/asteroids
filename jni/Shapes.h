@@ -4,31 +4,32 @@
 
 #include "geometry.h"
 
+// Shapes are immutable, they can only be rigidly moved
 class CShape
 {
 public:
   CShape(std::vector<Segment>&& segments);
 
-  CShape(CShape&& that);
-
   void MoveBy(Vector v);
 
   virtual void Draw() const;
 
-protected:
   Point GetCenter() const;
+  float GetRadius() const;
 
 private:
   std::vector<Segment> m_segments;
   Point m_center;
+  float m_radius;
 };
 
+// Ship is a shape that can also rotate
 class CShip : public CShape
 {
 public:
   CShip();
 
-  void SetRotation(float angle);
+  void SetAngle(float angle);
 
   virtual void Draw() const;
 

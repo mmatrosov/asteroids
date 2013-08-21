@@ -32,5 +32,5 @@ private:
 
   std::unique_ptr<CShip> m_pShip;
 
-  std::vector<CShape> m_menuShapes;
+  std::unique_ptr<CShape> m_pJoystick;
 };

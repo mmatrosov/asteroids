@@ -21,13 +21,14 @@ float deg2rad(float deg)
 CShape::CShape(std::vector<Segment>&& segments)
 {
   m_segments = std::move(segments);
-}
 
-//////////////////////////////////////////////////////////////////////////
-///
-CShape::CShape(CShape&& that)
-{
-  m_segments = std::move(that.m_segments);
+  // Init radius
+  m_radius = 0;
+  for (const Segment& s : m_segments)
+  {
+    m_radius = std::max(m_radius, static_cast<float>(sqrt(s.a.x * s.a.x + s.a.y * s.a.y)));
+    m_radius = std::max(m_radius, static_cast<float>(sqrt(s.b.x * s.b.x + s.b.y * s.b.y)));
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -60,6 +61,13 @@ Point CShape::GetCenter() const
 
 //////////////////////////////////////////////////////////////////////////
 ///
+float CShape::GetRadius() const
+{
+  return m_radius;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
 CShip::CShip() : CShape(ConstructSegments())
 {
   m_angle = static_cast<float>(M_PI);
@@ -71,28 +79,36 @@ std::vector<Segment> CShip::ConstructSegments() const
 {
   const float size = 15;
 
+  // Shit has the shape of the letter "A" pointing to the right
   std::vector<Segment> segments;
   Segment s;
 
   // Left side
-  s.a.x = -2 * size;
-  s.a.y = -3 * size;
-  s.b.x = 0;
-  s.b.y = 3 * size;
+  s.a.x = -3 * size;
+  s.a.y = -2 * size;
+  s.b.x = 3 * size;
+  s.b.y = 0;
   segments.push_back(s);
 
   // Right side
-  s.a.x = -s.a.x;
+  s.a.y = -s.a.y;
   segments.push_back(s);
 
   // Aft
-  s.a.x = -5.0f / 3 * size;
-  s.a.y = -2 * size;
-  s.b.x = -s.a.x;
-  s.b.y = s.a.y;
+  s.a.x = -2 * size;
+  s.a.y = -5.0f / 3 * size;
+  s.b.x = s.a.x;
+  s.b.y = -s.a.y;
   segments.push_back(s);
 
   return segments;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CShip::SetAngle(float angle)
+{
+  m_angle = angle;
 }
 
 //////////////////////////////////////////////////////////////////////////

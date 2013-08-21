@@ -4,6 +4,7 @@
 #ifndef _MSC_VER
 #  include <GLES/gl.h>
 #else
+#  define NOMINMAX
 #  include <Windows.h>
 #  include <gl/GL.h>
 #endif

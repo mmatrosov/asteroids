@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "gl.h"
+#include "Utils.h"
 
 #define _USE_MATH_DEFINES
 #include "math.h"
@@ -35,6 +36,17 @@ void CApplication::OnTouch(float x, float y)
 {
   m_touchX = x;
   m_touchY = y;
+
+  Point p(x, y);
+  Vector r = p - m_pJoystick->GetCenter();
+
+  if (r.len() < m_pJoystick->GetRadius())
+  {
+    float angle = -r.angle();
+    LOGI("angle=%g", angle);
+    // Negate angle since axis y is pointing downwards
+    m_pShip->SetAngle(angle);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -69,11 +81,9 @@ void CApplication::InitMenuShapes()
     segments.push_back(s);
   }
 
-  CShape joystick(std::move(segments));
+  m_pJoystick.reset(new CShape(std::move(segments)));
 
-  joystick.MoveBy(Vector(radius + border, m_height - radius - border));
-
-  m_menuShapes.push_back(std::move(joystick));
+  m_pJoystick->MoveBy(Vector(radius + border, m_height - radius - border));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -128,18 +138,15 @@ void CApplication::RenderTouch()
 
   glDrawArrays(GL_LINES, 0, 4);
 
-  m_touchX = 0;
-  m_touchY = 0;
+  m_touchX = -1;
+  m_touchY = -1;
 }
 
 //////////////////////////////////////////////////////////////////////////
 ///
 void CApplication::RenderMenu()
 {
-  for (const auto& shape : m_menuShapes)
-  {
-    shape.Draw();
-  }
+  m_pJoystick->Draw();
 }
 
 //////////////////////////////////////////////////////////////////////////
