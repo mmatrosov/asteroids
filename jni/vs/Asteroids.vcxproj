@@ -13,10 +13,9 @@
   <ItemGroup>
     <ClInclude Include="..\Application.h" />
     <ClInclude Include="..\geometry.h" />
-    <ClInclude Include="..\gl.h" />
+    <ClInclude Include="..\stdafx.h" />
     <ClInclude Include="..\Globals.h" />
     <ClInclude Include="..\Shapes.h" />
-    <ClInclude Include="..\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\exports.cpp" />

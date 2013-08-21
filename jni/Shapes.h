@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "geometry.h"
 
 // Shapes are immutable, they can only be rigidly moved

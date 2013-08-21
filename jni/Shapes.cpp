@@ -1,10 +1,8 @@
+#include "stdafx.h"
+
 #include "Shapes.h"
 
-#include "gl.h"
-#include "Utils.h"
 #include "Globals.h"
-
-#include "math.h"
 
 float rad2deg(float rad)
 {

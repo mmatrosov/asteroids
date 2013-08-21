@@ -1,10 +1,20 @@
+#include "stdafx.h"
+
 #include "Application.h"
 
-#include <math.h>
-#include <random>
-
-#include "gl.h"
-#include "Utils.h"
+// Get time in seconds
+double GetTime()
+{
+#ifndef _MSC_VER
+  timespec now;
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  double time = now.tv_sec + now.tv_nsec / 1e9;
+  LOGI("GetTime returning %g", time);
+  return time;
+#else
+  return 0;
+#endif
+}
 
 //////////////////////////////////////////////////////////////////////////
 ///
@@ -67,10 +77,20 @@ void CApplication::OnTouch(float x, float y)
 ///
 void CApplication::Render()
 {
+  if (m_collision)
+  {
+    if (GetTime() - m_collisionTime > 1)
+    {
+      Initialize();
+      m_collision = false;
+    }
+  }
+
   if (!m_collision)
   {
     HandleControls();
     MoveObjects();
+    HandleCollisions();
   }
 
   PrepareFrame();
@@ -79,8 +99,6 @@ void CApplication::Render()
   RenderMenu();
   RenderShip();
   RenderAsteroids();
-
-  HandleCollisions();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -311,6 +329,7 @@ void CApplication::HandleCollisions()
     if (Intersects(asteroid, *m_pShip))
     {
       m_collision = true;
+      m_collisionTime = GetTime();
       break;
     }
   }

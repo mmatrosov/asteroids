@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "Shapes.h"
 
 class CApplication
@@ -48,6 +46,8 @@ private:
   Vector m_joystickDir;
 
   bool m_collision;
+
+  double m_collisionTime;
 
   std::unique_ptr<CShip> m_pShip;
   std::unique_ptr<CShape> m_pJoystick;

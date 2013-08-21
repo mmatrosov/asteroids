@@ -17,10 +17,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the files
  * LICENSE-LGPL.txt and LICENSE-BSD.txt for more details.
  */
-#include <jni.h>
-#include <memory>
-#include "Globals.h"
+#include "stdafx.h"
 
+#include <jni.h>
+
+#include "Globals.h"
 #include "Application.h"
 
 std::unique_ptr<CApplication> g_pTheApp;
