@@ -144,21 +144,16 @@ void CApplication::InitMenuShapes()
   const float radius = 150;
   const float border = 20;
 
-  std::vector<Segment> segments;
+  m_pJoystick.reset(new CShape(CreateStarShape(count, radius)));
 
-  Segment s;
-
-  for (int i = 0; i < count; ++i)
-  {
-    s.a = Vector::FromPolar(radius, 2 * PI * i / count);
-    s.b = Vector::FromPolar(radius, 2 * PI * (i + 1) / count);
-    segments.push_back(s);
-  }
-
-  m_pJoystick.reset(new CShape(std::move(segments)));
+  // Fire button looks exactly like joystick
+  m_pFireButton.reset(new CShape(*m_pJoystick));
 
   // Place joystick in the bottom left corner
   m_pJoystick->MoveBy(Vector(radius + border, m_height - radius - border));
+
+  // Place fire button in the bottom right corner
+  m_pFireButton->MoveBy(Vector(m_width - radius - border, m_height - radius - border));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -180,12 +175,9 @@ void CApplication::InitAsteroids()
   const float speed = 100;
   const float safeSpace = 200;
 
-  std::vector<Point> verts(vertsCount);
-
   // Asteroids are generated as star polygons
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> radiusDist(0, maxRadius);
   std::uniform_real_distribution<float> offsetDist(0, static_cast<float>(m_width));
   std::uniform_real_distribution<float> angleDist(0, static_cast<float>(2 * PI));
 
@@ -193,25 +185,7 @@ void CApplication::InitAsteroids()
 
   for (int i = 0; i < m_maxAsteroids; ++i)
   {
-    // Init vertices
-    for (int j = 0; j < vertsCount; ++j)
-    {
-      float radius = radiusDist(gen);
-      verts[j] = Vector::FromPolar(radius, 2 * PI * j / vertsCount);
-    }
-
-    // Construct segments
-    std::vector<Segment> segments;
-
-    auto pV1 = verts.end() - 1;
-    auto pV2 = verts.begin();
-
-    for ( ; pV2 != verts.end(); pV1 = pV2++)
-    {
-      segments.push_back(Segment(*pV1, *pV2));
-    }
-
-    CShape asteroid(std::move(segments));
+    CShape asteroid = CreateStarShape(vertsCount, 0, maxRadius);
 
     // Move asteroid randomly, but make sure it doesn't collide with the ship
     bool collision = true;
@@ -330,6 +304,7 @@ void CApplication::RenderTouch()
 void CApplication::RenderMenu()
 {
   m_pJoystick->Draw();
+  m_pFireButton->Draw();
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -52,5 +52,6 @@ private:
 
   std::unique_ptr<CShip> m_pShip;
   std::unique_ptr<CShape> m_pJoystick;
+  std::unique_ptr<CShape> m_pFireButton;
   std::vector<CShape> m_asteroids;
 };

@@ -61,4 +61,21 @@ private:
   mutable std::vector<Segment> m_rotatedSegments;
 };
 
+class CProjectile : public CShape
+{
+public:
+  CProjectile();
+
+  virtual void MoveBy(float time);
+
+private:
+  std::vector<Segment> ConstructSegments() const;
+
+  const float m_timeToLive;
+
+  float m_livedTime;
+};
+
+CShape CreateStarShape(int vertsCount, float minRadius, float maxRadius = -1);
+
 bool Intersects(const CShape& shape1, const CShape& shape2);

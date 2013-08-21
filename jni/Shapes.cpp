@@ -39,6 +39,42 @@ bool Intersects(const CShape& shape1, const CShape& shape2)
 
 //////////////////////////////////////////////////////////////////////////
 ///
+CShape CreateStarShape(int vertsCount, float minRadius, float maxRadius)
+{
+  if (maxRadius < 0)
+  {
+    maxRadius = minRadius;
+  }
+
+  std::vector<Point> verts(vertsCount);
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<float> radiusDist(minRadius, maxRadius);
+
+  // Init vertices
+  for (int j = 0; j < vertsCount; ++j)
+  {
+    float radius = radiusDist(gen);
+    verts[j] = Vector::FromPolar(radius, 2 * PI * j / vertsCount);
+  }
+
+  // Construct segments
+  std::vector<Segment> segments;
+
+  auto pV1 = verts.end() - 1;
+  auto pV2 = verts.begin();
+
+  for ( ; pV2 != verts.end(); pV1 = pV2++)
+  {
+    segments.push_back(Segment(*pV1, *pV2));
+  }
+
+  return CShape(std::move(segments));
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
 CShape::CShape(std::vector<Segment>&& segments)
 {
   m_segments = std::move(segments);
@@ -269,4 +305,36 @@ const std::vector<Segment>& CShip::GetSegments() const
   }
 
   return m_rotatedSegments;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+CProjectile::CProjectile() : 
+  CShape(ConstructSegments()), 
+  m_timeToLive(2)
+{
+  m_livedTime = 0;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CProjectile::MoveBy(float time)
+{
+  CShape::MoveBy(time);
+
+  m_livedTime += time;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+std::vector<Segment> CProjectile::ConstructSegments() const
+{
+  const float size = 3;
+
+  // Shit has the shape of the letter "A" pointing to the right
+  std::vector<Segment> segments;
+  Segment s;
+
+
+  return segments;
 }
