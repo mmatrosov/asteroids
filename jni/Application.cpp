@@ -21,6 +21,20 @@ CApplication::~CApplication()
 
 //////////////////////////////////////////////////////////////////////////
 ///
+int CApplication::GetScreenWidth() const
+{
+  return m_width;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+int CApplication::GetScreenHeight() const
+{
+  return m_height;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
 void CApplication::OnResize(int width, int height)
 {
   // Assumed to occur only once at application start since the orientation is locked
@@ -38,23 +52,14 @@ void CApplication::OnTouch(float x, float y)
   m_touchX = x;
   m_touchY = y;
 
-  Point p(x, y);
-  Vector r = p - m_pJoystick->GetCenter();
-
-  if (r.len() < m_pJoystick->GetRadius())
-  {
-    // Negate angle since axis y is pointing downwards
-    m_pShip->SetAngle(-r.angle());
-
-    m_pShip->SetVelocity(r);
-  }
+  m_joystickDir = Point(x, y) - m_pJoystick->GetCenter();
 }
 
 //////////////////////////////////////////////////////////////////////////
 ///
 void CApplication::Render()
 {
-  m_pShip->MoveBy(1.0f / 60);
+  HandleControls();
 
   PrepareFrame();
 
@@ -97,6 +102,29 @@ void CApplication::InitShip()
   m_pShip.reset(new CShip());
 
   m_pShip->MoveBy(Vector(m_width / 2.0f, m_height / 2.0f));
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::HandleControls()
+{
+  if (m_joystickDir.len() < m_pJoystick->GetRadius())
+  {
+    if (m_joystickDir.len() > 0)
+    {
+      // Negate angle since axis y is pointing downwards
+      m_pShip->SetAngle(-m_joystickDir.angle());
+    }
+
+    m_pShip->ApplyAcceleration(m_joystickDir);
+  }
+
+  float time = 1.0f / 60;
+
+  m_pShip->MoveBy(time);
+  m_pShip->ApplyFriction(time);
+
+  m_joystickDir = Vector();
 }
 
 //////////////////////////////////////////////////////////////////////////

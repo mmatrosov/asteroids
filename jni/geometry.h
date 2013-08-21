@@ -24,6 +24,18 @@ struct Vector
     Vector v(x * a, y * a);
     return v;
   }
+  Vector operator/(float a)
+  {
+    Vector v(x / a, y / a);
+    return v;
+  }
+
+  Vector& operator+=(const Vector& rhs)
+  {
+    x += rhs.x;
+    y += rhs.y;
+    return *this;
+  }
 };
 
 struct Point

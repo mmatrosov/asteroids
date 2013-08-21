@@ -2,6 +2,7 @@
 
 #include "gl.h"
 #include "Utils.h"
+#include "Globals.h"
 
 #define _USE_MATH_DEFINES
 #include "math.h"
@@ -69,6 +70,35 @@ void CShape::MoveBy(Vector offset)
   }
 
   m_center += offset;
+
+  // Handle wrapping beside screen boundaries
+  Vector wrap;
+  int width = Globals::ScreenWidth();
+  int height = Globals::ScreenHeight();
+
+  if (m_center.x < -m_radius)
+  {
+    wrap.x = width + 2 * m_radius;
+  } 
+  else if (m_center.x > width + m_radius)
+  {
+    wrap.x = -width - 2 * m_radius;
+  }
+
+  if (m_center.y < -m_radius)
+  {
+    wrap.y = height + 2 * m_radius;
+  }
+  else if (m_center.y > height + m_radius)
+  {
+    wrap.y = -height - 2 * m_radius;
+  }
+
+  if (wrap.x != 0 || wrap.y != 0)
+  {
+    // Since we're using strict inequalities, this call won't infinitely recurse
+    MoveBy(wrap);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,7 +118,9 @@ void CShape::Draw() const
 
 //////////////////////////////////////////////////////////////////////////
 ///
-CShip::CShip() : CShape(ConstructSegments())
+CShip::CShip() : 
+  CShape(ConstructSegments()), 
+  m_mass(10), m_friction(10)
 {
   m_angle = static_cast<float>(M_PI);
 }
@@ -129,6 +161,20 @@ std::vector<Segment> CShip::ConstructSegments() const
 void CShip::SetAngle(float angle)
 {
   m_angle = angle;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CShip::ApplyAcceleration(Vector accel)
+{
+  m_velocity += accel / m_mass;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CShip::ApplyFriction(float time)
+{
+  ApplyAcceleration(GetVelocity() * (-1 * m_friction * time));
 }
 
 //////////////////////////////////////////////////////////////////////////

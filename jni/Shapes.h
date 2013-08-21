@@ -21,9 +21,11 @@ public:
 
   virtual void Draw() const;
 
+protected:
+  Vector m_velocity;
+
 private:
   std::vector<Segment> m_segments;
-  Vector m_velocity;
   Point m_center;
   float m_radius;
 };
@@ -36,10 +38,17 @@ public:
 
   void SetAngle(float angle);
 
+  void ApplyAcceleration(Vector accel);
+
+  void ApplyFriction(float time);
+
   virtual void Draw() const;
 
 private:
   std::vector<Segment> ConstructSegments() const;
+
+  const float m_mass;
+  const float m_friction;
 
   float m_angle;
 };

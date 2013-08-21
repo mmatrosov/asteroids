@@ -19,6 +19,7 @@
  */
 #include <jni.h>
 #include <memory>
+#include "Globals.h"
 
 #include "Application.h"
 
@@ -59,5 +60,18 @@ extern "C" {
   void Java_com_example_Asteroids_DemoRenderer_nativeRender(JNIEnv* env)
   {
     g_pTheApp->Render();
+  }
+}
+
+namespace Globals
+{
+  int ScreenWidth()
+  {
+    return g_pTheApp->GetScreenWidth();
+  }
+
+  int ScreenHeight()
+  {
+    return g_pTheApp->GetScreenHeight();
   }
 }
