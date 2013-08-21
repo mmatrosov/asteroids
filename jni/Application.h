@@ -43,11 +43,10 @@ private:
   int m_width;
   int m_height;
 
-  Vector m_joystickDir;
-
   bool m_collision;
 
   double m_collisionTime;
+  double m_lastMovementTime;
 
   std::map<int, Point> m_pointers;
 

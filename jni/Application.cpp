@@ -133,6 +133,7 @@ void CApplication::Initialize()
   InitAsteroids();
 
   m_isInitialized = true;
+  m_lastMovementTime = GetTime();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -262,8 +263,7 @@ void CApplication::HandleControls()
 ///
 void CApplication::MoveObjects()
 {
-  // ToDo: use actual FPS here
-  float time = 1.0f / 60;
+  float time = static_cast<float>(GetTime() - m_lastMovementTime);
 
   m_pShip->MoveBy(time);
   m_pShip->ApplyFriction(time);
@@ -272,6 +272,8 @@ void CApplication::MoveObjects()
   {
     asteroid.MoveBy(time);
   }
+
+  m_lastMovementTime = GetTime();
 }
 
 //////////////////////////////////////////////////////////////////////////
