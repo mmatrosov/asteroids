@@ -26,13 +26,12 @@ private:
   void InitAsteroids();
 
   void HandleControls();
+  void HandleProjectile();
   void MoveObjects();
 
   void PrepareFrame();
   void RenderTouch();
-  void RenderMenu();
-  void RenderShip();
-  void RenderAsteroids();
+  void RenderObjects();
 
   void HandleCollisions();
 
@@ -45,13 +44,16 @@ private:
 
   bool m_collision;
 
+  bool m_wasProjectileFired;
+
   double m_collisionTime;
   double m_lastMovementTime;
 
   std::map<int, Point> m_pointers;
 
-  std::unique_ptr<CShip> m_pShip;
   std::unique_ptr<CShape> m_pJoystick;
   std::unique_ptr<CShape> m_pFireButton;
+  std::unique_ptr<CShip> m_pShip;
   std::vector<CShape> m_asteroids;
+  std::list<CProjectile> m_projectiles;
 };

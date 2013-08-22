@@ -22,6 +22,12 @@ struct Vector
     return static_cast<float>(atan2(y, x));
   }
 
+  Vector norm() const
+  {
+    float l = len();
+    return Vector(x / l, y / l);
+  }
+
   Vector operator*(float a) const
   {
     return Vector(x * a, y * a);
@@ -31,6 +37,10 @@ struct Vector
     return Vector(x / a, y / a);
   }
 
+  Vector operator+(Vector rhs) const
+  {
+    return Vector(x + rhs.x, y + rhs.y);
+  }
   Vector operator-(Vector rhs) const
   {
     return Vector(x - rhs.x, y - rhs.y);

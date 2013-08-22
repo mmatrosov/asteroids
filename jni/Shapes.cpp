@@ -159,7 +159,7 @@ void CShape::MoveBy(Vector offset)
 
 //////////////////////////////////////////////////////////////////////////
 ///
-void CShape::MoveBy(float time)
+void CShape::ApplyTime(float time)
 {
   MoveBy(m_velocity * time);
 }
@@ -222,6 +222,13 @@ std::vector<Segment> CShip::ConstructSegments() const
 
 //////////////////////////////////////////////////////////////////////////
 ///
+float CShip::GetAngle() const
+{
+  return m_angle;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
 void CShip::SetAngle(float angle)
 {
   m_angle = angle;
@@ -252,9 +259,9 @@ void CShip::MoveBy(Vector offset)
 
 //////////////////////////////////////////////////////////////////////////
 ///
-void CShip::MoveBy(float time)
+void CShip::ApplyTime(float time)
 {
-  CShape::MoveBy(time);
+  CShape::ApplyTime(time);
   m_areRotatedSegmentsValid = false;
 }
 
@@ -310,31 +317,25 @@ const std::vector<Segment>& CShip::GetSegments() const
 //////////////////////////////////////////////////////////////////////////
 ///
 CProjectile::CProjectile() : 
-  CShape(ConstructSegments()), 
-  m_timeToLive(2)
+  CShape(CreateStarShape(4, 3))
 {
   m_livedTime = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
 ///
-void CProjectile::MoveBy(float time)
+void CProjectile::ApplyTime(float time)
 {
-  CShape::MoveBy(time);
+  CShape::ApplyTime(time);
 
   m_livedTime += time;
 }
 
 //////////////////////////////////////////////////////////////////////////
 ///
-std::vector<Segment> CProjectile::ConstructSegments() const
+bool CProjectile::IsExpired() const
 {
-  const float size = 3;
+  const float timeToLive = 1;
 
-  // Shit has the shape of the letter "A" pointing to the right
-  std::vector<Segment> segments;
-  Segment s;
-
-
-  return segments;
+  return m_livedTime > timeToLive;
 }

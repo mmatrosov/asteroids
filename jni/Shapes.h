@@ -15,7 +15,7 @@ public:
   void SetVelocity(Vector velocity);
 
   virtual void MoveBy(Vector offset);
-  virtual void MoveBy(float time);
+  virtual void ApplyTime(float time);
 
   virtual void Draw() const;
 
@@ -36,6 +36,8 @@ class CShip : public CShape
 public:
   CShip();
 
+  float GetAngle() const;
+
   void SetAngle(float angle);
 
   void ApplyAcceleration(Vector accel);
@@ -43,7 +45,7 @@ public:
   void ApplyFriction(float time);
 
   virtual void MoveBy(Vector offset);
-  virtual void MoveBy(float time);
+  virtual void ApplyTime(float time);
 
   virtual void Draw() const;
 
@@ -66,13 +68,11 @@ class CProjectile : public CShape
 public:
   CProjectile();
 
-  virtual void MoveBy(float time);
+  virtual void ApplyTime(float time);
+
+  bool IsExpired() const;
 
 private:
-  std::vector<Segment> ConstructSegments() const;
-
-  const float m_timeToLive;
-
   float m_livedTime;
 };
 

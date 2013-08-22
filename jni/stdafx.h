@@ -28,11 +28,13 @@
 #endif
 
 // Common includes
-#include <memory>
-#include <cmath>
 #include <vector>
+#include <list>
 #include <map>
+#include <memory>
+#include <algorithm>
 #include <random>
+#include <cmath>
 
 // Stuff
 const float PI = 3.14159265358979323846f;

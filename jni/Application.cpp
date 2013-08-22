@@ -23,8 +23,8 @@ CApplication::CApplication() : m_maxAsteroids(4)
   glEnableClientState(GL_VERTEX_ARRAY);
 
   m_isInitialized = false;
-
   m_collision = false;
+  m_wasProjectileFired = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -66,6 +66,12 @@ void CApplication::OnResize(int width, int height)
 void CApplication::OnTouchDown(int id, float x, float y)
 {
   m_pointers[id] = Point(x, y);
+
+  // A projectile should only be fired on new touch
+  if ((Point(x, y) - m_pFireButton->GetCenter()).len() < m_pFireButton->GetRadius())
+  {
+    m_wasProjectileFired = true;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,6 +116,7 @@ void CApplication::Render()
   if (!m_collision)
   {
     HandleControls();
+    HandleProjectile();
     MoveObjects();
 //    HandleCollisions();
   }
@@ -117,9 +124,7 @@ void CApplication::Render()
   PrepareFrame();
 
   RenderTouch();
-  RenderMenu();
-  RenderShip();
-  RenderAsteroids();
+  RenderObjects();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -140,19 +145,15 @@ void CApplication::Initialize()
 ///
 void CApplication::InitMenuShapes()
 {
-  const int count = 8;
   const float radius = 150;
   const float border = 20;
 
-  m_pJoystick.reset(new CShape(CreateStarShape(count, radius)));
-
-  // Fire button looks exactly like joystick
-  m_pFireButton.reset(new CShape(*m_pJoystick));
-
   // Place joystick in the bottom left corner
+  m_pJoystick.reset(new CShape(CreateStarShape(8, radius)));
   m_pJoystick->MoveBy(Vector(radius + border, m_height - radius - border));
 
   // Place fire button in the bottom right corner
+  m_pFireButton.reset(new CShape(CreateStarShape(8, radius)));
   m_pFireButton->MoveBy(Vector(m_width - radius - border, m_height - radius - border));
 }
 
@@ -235,16 +236,53 @@ void CApplication::HandleControls()
 
 //////////////////////////////////////////////////////////////////////////
 ///
+void CApplication::HandleProjectile()
+{
+  bool exitFlag = !m_wasProjectileFired;
+
+  m_wasProjectileFired = false;
+
+  if (exitFlag)
+  {
+    return;
+  }
+
+  const float speed = 500;
+
+  CProjectile projectile;
+
+  Vector shipDir = Vector::FromPolar(m_pShip->GetRadius(), -m_pShip->GetAngle());
+  Vector shipVel = m_pShip->GetVelocity();
+
+  // A projectile is shot from the front of the ship with it's own speed
+  projectile.MoveBy(m_pShip->GetCenter().ToVector() + shipDir);
+  projectile.SetVelocity(shipVel + shipDir.norm() * speed);
+
+  m_projectiles.push_back(std::move(projectile));
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
 void CApplication::MoveObjects()
 {
   float time = static_cast<float>(GetTime() - m_lastMovementTime);
 
-  m_pShip->MoveBy(time);
+  m_pShip->ApplyTime(time);
   m_pShip->ApplyFriction(time);
 
   for (CShape& asteroid : m_asteroids)
   {
-    asteroid.MoveBy(time);
+    asteroid.ApplyTime(time);
+  }
+
+  m_projectiles.erase(
+    std::remove_if(m_projectiles.begin(), m_projectiles.end(), 
+      [] (const CProjectile& p) { return p.IsExpired(); }), 
+    m_projectiles.end());
+
+  for (CShape& projectile : m_projectiles)
+  {
+    projectile.ApplyTime(time);
   }
 
   m_lastMovementTime = GetTime();
@@ -301,26 +339,20 @@ void CApplication::RenderTouch()
 
 //////////////////////////////////////////////////////////////////////////
 ///
-void CApplication::RenderMenu()
+void CApplication::RenderObjects()
 {
   m_pJoystick->Draw();
   m_pFireButton->Draw();
-}
-
-//////////////////////////////////////////////////////////////////////////
-///
-void CApplication::RenderShip()
-{
   m_pShip->Draw();
-}
 
-//////////////////////////////////////////////////////////////////////////
-///
-void CApplication::RenderAsteroids()
-{
   for (const CShape& asteroid : m_asteroids)
   {
     asteroid.Draw();
+  }
+
+  for (const CShape& projectile : m_projectiles)
+  {
+    projectile.Draw();
   }
 }
 
