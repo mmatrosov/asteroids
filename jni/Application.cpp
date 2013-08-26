@@ -23,7 +23,7 @@ CApplication::CApplication() : m_maxAsteroids(4)
   glEnableClientState(GL_VERTEX_ARRAY);
 
   m_isInitialized = false;
-  m_collision = false;
+  m_isShipCrashed = false;
   m_wasProjectileFired = false;
 }
 
@@ -104,26 +104,32 @@ void CApplication::OnTouchCancel()
 ///
 void CApplication::Render()
 {
-  if (m_collision)
+  if (m_isShipCrashed)
   {
-    if (GetTime() - m_collisionTime > 1)
+    if (GetTime() - m_shipCrashTime > 1)
     {
       Initialize();
-      m_collision = false;
+      m_isShipCrashed = false;
     }
   }
 
-  if (!m_collision)
+  // All asteroids were destroyed
+  if (m_asteroids.empty())
+  {
+    // Next turn will contain one more asteroid
+    m_maxAsteroids++;
+    Initialize();
+  }
+
+  if (!m_isShipCrashed)
   {
     HandleControls();
     HandleProjectile();
     MoveObjects();
-//    HandleCollisions();
+    HandleCollisions();
   }
 
   PrepareFrame();
-
-  RenderTouch();
   RenderObjects();
 }
 
@@ -171,8 +177,6 @@ void CApplication::InitShip()
 ///
 void CApplication::InitAsteroids()
 {
-  const int vertsCount = 10;
-  const float maxRadius = 100;
   const float speed = 100;
   const float safeSpace = 200;
 
@@ -186,7 +190,7 @@ void CApplication::InitAsteroids()
 
   for (int i = 0; i < m_maxAsteroids; ++i)
   {
-    CShape asteroid = CreateStarShape(vertsCount, 0, maxRadius);
+    CAsteroid asteroid(0);
 
     // Move asteroid randomly, but make sure it doesn't collide with the ship
     bool collision = true;
@@ -207,9 +211,6 @@ void CApplication::InitAsteroids()
     // Add an asteroid
     m_asteroids.push_back(std::move(asteroid));
   }
-
-  // Next turn will contain one more asteroid
-  m_maxAsteroids++;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -309,36 +310,6 @@ void CApplication::PrepareFrame()
 
 //////////////////////////////////////////////////////////////////////////
 ///
-void CApplication::RenderTouch()
-{
-  // Seems like this function is causing an error eventually:
-  // A/libc(5821): Fatal signal 11 (SIGSEGV) at 0x00070013 (code=1)
-  return;
-
-  const float w = 200.0f;
-
-  static GLfloat vertices[4][2] = { 0 };
-
-  vertices[0][1] = -w;
-  vertices[1][1] = w;
-  vertices[2][0] = -w;
-  vertices[3][0] = w;
-
-  glVertexPointer(2, GL_FLOAT, 0, vertices);
-
-  for (const auto& ptr : m_pointers)
-  {
-    Point p = ptr.second;
-
-    glPushMatrix();
-    glTranslatef(p.x, p.y, 0);
-    glDrawArrays(GL_LINES, 0, 4);
-    glPopMatrix();
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////
-///
 void CApplication::RenderObjects()
 {
   m_pJoystick->Draw();
@@ -364,9 +335,60 @@ void CApplication::HandleCollisions()
   {
     if (Intersects(asteroid, *m_pShip))
     {
-      m_collision = true;
-      m_collisionTime = GetTime();
+//      m_isShipCrashed = true;
+      m_shipCrashTime = GetTime();
       break;
     }
   }
+
+  for (auto pAsteroid = m_asteroids.begin(); pAsteroid != m_asteroids.end(); )
+  {
+    bool isHit = false;
+
+    for (auto pProjectile = m_projectiles.begin(); pProjectile != m_projectiles.end(); ++pProjectile)
+    {
+      if (Intersects(*pAsteroid, *pProjectile))
+      {
+        isHit = true;
+        m_projectiles.erase(pProjectile);
+        break;
+      }
+    }
+
+    if (!isHit)
+    {
+      ++pAsteroid;
+    }
+    else
+    {
+      pAsteroid = ShatterAsteroid(pAsteroid);
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+CApplication::Asteroids::iterator CApplication::ShatterAsteroid(Asteroids::iterator pAsteroid)
+{
+  const int degree = pAsteroid->GetDegree();
+
+  if (degree < 2)
+  {
+    const float shatterAngle = deg2rad(15.0f);
+    const float speedFactor = 1.0f;
+
+    Vector dir = pAsteroid->GetVelocity();
+    Vector center = pAsteroid->GetCenter().ToVector();
+    Vector offset = dir.rotate(deg2rad(90)).norm() * pAsteroid->GetRadius() / 2;
+
+    auto pShatter1 = m_asteroids.insert(pAsteroid, CAsteroid(degree + 1));
+    pShatter1->MoveBy(center + offset);
+    pShatter1->SetVelocity(dir.rotate(shatterAngle) * speedFactor);
+
+    auto pShatter2 = m_asteroids.insert(pAsteroid, CAsteroid(degree + 1));
+    pShatter2->MoveBy(center - offset);
+    pShatter2->SetVelocity(dir.rotate(-shatterAngle) * speedFactor);
+  }
+
+  return m_asteroids.erase(pAsteroid);
 }

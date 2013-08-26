@@ -63,6 +63,17 @@ private:
   mutable std::vector<Segment> m_rotatedSegments;
 };
 
+class CAsteroid : public CShape
+{
+public:
+  CAsteroid(int degree = 0);
+
+  int GetDegree() const;
+
+private:
+  int m_degree;
+};
+
 class CProjectile : public CShape
 {
 public:

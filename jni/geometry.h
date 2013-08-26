@@ -28,6 +28,13 @@ struct Vector
     return Vector(x / l, y / l);
   }
 
+  Vector rotate(float angle) const
+  {
+    const float c = cos(angle);
+    const float s = sin(angle);
+    return Vector(x * c - y * s, x * s + y * c);
+  }
+
   Vector operator*(float a) const
   {
     return Vector(x * a, y * a);
@@ -94,6 +101,9 @@ struct Segment
   Segment(const Point& a, const Point& b) : a(a), b(b) {}
 };
 
+bool Intersects(const Segment& s1, const Segment& s2);
+
 float cross(const Vector& a, const Vector& b);
 
-bool Intersects(const Segment& s1, const Segment& s2);
+float rad2deg(float rad);
+float deg2rad(float deg);

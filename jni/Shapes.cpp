@@ -4,16 +4,6 @@
 
 #include "Globals.h"
 
-float rad2deg(float rad)
-{
-  return static_cast<float>(rad / PI * 180);
-}
-
-float deg2rad(float deg)
-{
-  return static_cast<float>(deg / 180 * PI);
-}
-
 //////////////////////////////////////////////////////////////////////////
 ///
 bool Intersects(const CShape& shape1, const CShape& shape2)
@@ -312,6 +302,22 @@ const std::vector<Segment>& CShip::GetSegments() const
   }
 
   return m_rotatedSegments;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+CAsteroid::CAsteroid(int degree /*= 0*/) :
+  // We have two shatters per new degree, so the size is decreased by sqrt(2) each time
+  CShape(CreateStarShape(10, 0, 100 / pow(2.0f, degree / 2.0f)))
+{
+  m_degree = degree;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+int CAsteroid::GetDegree() const
+{
+  return m_degree;
 }
 
 //////////////////////////////////////////////////////////////////////////

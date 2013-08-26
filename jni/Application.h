@@ -20,6 +20,8 @@ public:
   void Render();
 
 private:
+  typedef std::list<CAsteroid> Asteroids;
+
   void Initialize();
   void InitMenuShapes();
   void InitShip();
@@ -30,10 +32,12 @@ private:
   void MoveObjects();
 
   void PrepareFrame();
-  void RenderTouch();
   void RenderObjects();
 
   void HandleCollisions();
+  Asteroids::iterator ShatterAsteroid(Asteroids::iterator pAsteroid);
+
+  CShape CreateAsteroid(int degree) const;
 
   bool m_isInitialized;
 
@@ -42,11 +46,11 @@ private:
   int m_width;
   int m_height;
 
-  bool m_collision;
+  bool m_isShipCrashed;
 
   bool m_wasProjectileFired;
 
-  double m_collisionTime;
+  double m_shipCrashTime;
   double m_lastMovementTime;
 
   std::map<int, Point> m_pointers;
@@ -54,6 +58,6 @@ private:
   std::unique_ptr<CShape> m_pJoystick;
   std::unique_ptr<CShape> m_pFireButton;
   std::unique_ptr<CShip> m_pShip;
-  std::vector<CShape> m_asteroids;
+  Asteroids m_asteroids;
   std::list<CProjectile> m_projectiles;
 };
