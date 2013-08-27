@@ -79,12 +79,19 @@ class CProjectile : public CShape
 public:
   CProjectile();
 
+  bool IsExpired() const;
+
+  virtual void MoveBy(Vector offset);
   virtual void ApplyTime(float time);
 
-  bool IsExpired() const;
+  virtual const std::vector<Segment>& GetSegments() const;
 
 private:
   float m_livedTime;
+  float m_lastMoveTime;
+
+  mutable bool m_areShadowSegmentsValid;
+  mutable std::vector<Segment> m_shadowSegments;
 };
 
 CShape CreateStarShape(int vertsCount, float minRadius, float maxRadius = -1);

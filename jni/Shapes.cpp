@@ -267,7 +267,8 @@ void CShip::Draw() const
   glRotatef(rad2deg(m_angle), 0, 0, -1);
   glTranslatef(-center.x, -center.y, 0);
 
-  CShape::Draw(); 
+  CShape::Draw();
+ 
   glPopMatrix(); 
 }
 
@@ -326,15 +327,8 @@ CProjectile::CProjectile() :
   CShape(CreateStarShape(4, 3))
 {
   m_livedTime = 0;
-}
-
-//////////////////////////////////////////////////////////////////////////
-///
-void CProjectile::ApplyTime(float time)
-{
-  CShape::ApplyTime(time);
-
-  m_livedTime += time;
+  m_lastMoveTime = 0;
+  m_areShadowSegmentsValid = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -344,4 +338,49 @@ bool CProjectile::IsExpired() const
   const float timeToLive = 1;
 
   return m_livedTime > timeToLive;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CProjectile::MoveBy(Vector offset)
+{
+  CShape::MoveBy(offset);
+  m_areShadowSegmentsValid = false;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CProjectile::ApplyTime(float time)
+{
+  CShape::ApplyTime(time);
+
+  m_livedTime += time;
+  m_lastMoveTime = time;
+  m_areShadowSegmentsValid = false;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+const std::vector<Segment>& CProjectile::GetSegments() const
+{
+  if (!m_areShadowSegmentsValid)
+  {
+    m_shadowSegments = CShape::GetSegments();
+
+    const int count = m_shadowSegments.size();
+
+    Vector dir = GetVelocity() * m_lastMoveTime;
+
+    // For each input segment move it along offset vector from previous render position
+    for (int i = 0; i < count; ++i)
+    {
+      Segment s = m_shadowSegments[i];
+      m_shadowSegments.push_back(s - dir);
+      m_shadowSegments.push_back(Segment(s.a, s.a - dir));
+    }
+
+    m_areShadowSegmentsValid = true;
+  }
+
+  return m_shadowSegments;
 }

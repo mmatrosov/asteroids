@@ -21,6 +21,7 @@ public:
 
 private:
   typedef std::list<CAsteroid> Asteroids;
+  typedef std::list<CProjectile> Projectiles;
 
   void Initialize();
   void InitMenuShapes();
@@ -59,5 +60,5 @@ private:
   std::unique_ptr<CShape> m_pFireButton;
   std::unique_ptr<CShip> m_pShip;
   Asteroids m_asteroids;
-  std::list<CProjectile> m_projectiles;
+  Projectiles m_projectiles;
 };

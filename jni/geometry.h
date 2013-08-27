@@ -99,6 +99,11 @@ struct Segment
 
   Segment() {}
   Segment(const Point& a, const Point& b) : a(a), b(b) {}
+
+  Segment operator-(const Vector& v)
+  {
+    return Segment(a - v, b - v);
+  }
 };
 
 bool Intersects(const Segment& s1, const Segment& s2);
