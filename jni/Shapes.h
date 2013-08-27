@@ -54,9 +54,6 @@ public:
 private:
   std::vector<Segment> ConstructSegments() const;
 
-  const float m_mass;
-  const float m_friction;
-
   float m_angle;
 
   mutable bool m_areRotatedSegmentsValid;

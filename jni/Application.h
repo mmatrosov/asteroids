@@ -24,6 +24,7 @@ private:
   void InitMenuShapes();
   void InitShip();
   void InitAsteroids();
+  void InitProjectiles();
 
   void HandleControls();
   void HandleProjectile();

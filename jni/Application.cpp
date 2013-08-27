@@ -142,6 +142,7 @@ void CApplication::Initialize()
   InitMenuShapes();
   InitShip();
   InitAsteroids();
+  InitProjectiles();
 
   m_isInitialized = true;
   m_lastMovementTime = GetTime();
@@ -211,6 +212,13 @@ void CApplication::InitAsteroids()
     // Add an asteroid
     m_asteroids.push_back(std::move(asteroid));
   }
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+void CApplication::InitProjectiles()
+{
+  m_projectiles.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -336,7 +344,7 @@ void CApplication::HandleCollisions()
   {
     if (Intersects(asteroid, *m_pShip))
     {
-//      m_isShipCrashed = true;
+      m_isShipCrashed = true;
       m_shipCrashTime = GetTime();
       break;
     }

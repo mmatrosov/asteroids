@@ -172,8 +172,7 @@ const std::vector<Segment>& CShape::GetSegments() const
 //////////////////////////////////////////////////////////////////////////
 ///
 CShip::CShip() : 
-  CShape(ConstructSegments()), 
-  m_mass(10), m_friction(10)
+  CShape(ConstructSegments())
 {
   m_angle = PI / 2;
   m_areRotatedSegmentsValid = false;
@@ -229,14 +228,18 @@ void CShip::SetAngle(float angle)
 ///
 void CShip::ApplyAcceleration(Vector accel)
 {
-  m_velocity += accel / m_mass;
+  const float mass = 10;
+
+  m_velocity += accel / mass;
 }
 
 //////////////////////////////////////////////////////////////////////////
 ///
 void CShip::ApplyFriction(float time)
 {
-  ApplyAcceleration(GetVelocity() * (-1 * m_friction * time));
+  static const float friction = 10;
+
+  ApplyAcceleration(GetVelocity() * (-1 * friction * time));
 }
 
 //////////////////////////////////////////////////////////////////////////
