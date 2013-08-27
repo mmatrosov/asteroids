@@ -331,6 +331,7 @@ void CApplication::RenderObjects()
 ///
 void CApplication::HandleCollisions()
 {
+  // Ship with asteroids collisions
   for (const CShape& asteroid : m_asteroids)
   {
     if (Intersects(asteroid, *m_pShip))
@@ -341,6 +342,7 @@ void CApplication::HandleCollisions()
     }
   }
 
+  // Projectiles with asteroids collisions
   for (auto pAsteroid = m_asteroids.begin(); pAsteroid != m_asteroids.end(); )
   {
     bool isHit = false;
@@ -361,34 +363,11 @@ void CApplication::HandleCollisions()
     }
     else
     {
-      pAsteroid = ShatterAsteroid(pAsteroid);
+      auto shatters = pAsteroid->CreateShatters();
+
+      std::move(shatters.begin(), shatters.end(), std::back_inserter(m_asteroids));
+
+      pAsteroid = m_asteroids.erase(pAsteroid);
     }
   }
-}
-
-//////////////////////////////////////////////////////////////////////////
-///
-CApplication::Asteroids::iterator CApplication::ShatterAsteroid(Asteroids::iterator pAsteroid)
-{
-  const int degree = pAsteroid->GetDegree();
-
-  if (degree < 2)
-  {
-    const float shatterAngle = deg2rad(15.0f);
-    const float speedFactor = 1.0f;
-
-    Vector dir = pAsteroid->GetVelocity();
-    Vector center = pAsteroid->GetCenter().ToVector();
-    Vector offset = dir.rotate(deg2rad(90)).norm() * pAsteroid->GetRadius() / 2;
-
-    auto pShatter1 = m_asteroids.insert(pAsteroid, CAsteroid(degree + 1));
-    pShatter1->MoveBy(center + offset);
-    pShatter1->SetVelocity(dir.rotate(shatterAngle) * speedFactor);
-
-    auto pShatter2 = m_asteroids.insert(pAsteroid, CAsteroid(degree + 1));
-    pShatter2->MoveBy(center - offset);
-    pShatter2->SetVelocity(dir.rotate(-shatterAngle) * speedFactor);
-  }
-
-  return m_asteroids.erase(pAsteroid);
 }

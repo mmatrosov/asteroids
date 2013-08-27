@@ -63,6 +63,7 @@ private:
   mutable std::vector<Segment> m_rotatedSegments;
 };
 
+// Asteroid is a shape with tracked generation number - a degree
 class CAsteroid : public CShape
 {
 public:
@@ -70,10 +71,19 @@ public:
 
   int GetDegree() const;
 
+  std::vector<CAsteroid> CreateShatters() const;
+
 private:
+  static CShape CreateAsteroid(int degree);
+
+  static const int SHATTERS_COUNT = 2;
+  static const int MAX_DEGREE = 2;
+
   int m_degree;
 };
 
+// Projectile expires after a certain amount of time. It also leaves shadow track for
+// better collision detection, since it is very small.
 class CProjectile : public CShape
 {
 public:

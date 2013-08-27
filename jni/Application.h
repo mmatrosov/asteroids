@@ -20,9 +20,6 @@ public:
   void Render();
 
 private:
-  typedef std::list<CAsteroid> Asteroids;
-  typedef std::list<CProjectile> Projectiles;
-
   void Initialize();
   void InitMenuShapes();
   void InitShip();
@@ -36,7 +33,6 @@ private:
   void RenderObjects();
 
   void HandleCollisions();
-  Asteroids::iterator ShatterAsteroid(Asteroids::iterator pAsteroid);
 
   CShape CreateAsteroid(int degree) const;
 
@@ -59,6 +55,6 @@ private:
   std::unique_ptr<CShape> m_pJoystick;
   std::unique_ptr<CShape> m_pFireButton;
   std::unique_ptr<CShip> m_pShip;
-  Asteroids m_asteroids;
-  Projectiles m_projectiles;
+  std::list<CAsteroid> m_asteroids;
+  std::list<CProjectile> m_projectiles;
 };

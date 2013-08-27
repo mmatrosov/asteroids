@@ -308,8 +308,7 @@ const std::vector<Segment>& CShip::GetSegments() const
 //////////////////////////////////////////////////////////////////////////
 ///
 CAsteroid::CAsteroid(int degree /*= 0*/) :
-  // We have two shatters per new degree, so the size is decreased by sqrt(2) each time
-  CShape(CreateStarShape(10, 0, 100 / pow(2.0f, degree / 2.0f)))
+  CShape(CreateAsteroid(degree))
 {
   m_degree = degree;
 }
@@ -319,6 +318,53 @@ CAsteroid::CAsteroid(int degree /*= 0*/) :
 int CAsteroid::GetDegree() const
 {
   return m_degree;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+std::vector<CAsteroid> CAsteroid::CreateShatters() const
+{
+  std::vector<CAsteroid> shatters;
+
+  if (m_degree < MAX_DEGREE)
+  {
+    const float shatterAngle = deg2rad(15.0f);
+    const float speedFactor = 1.0f;
+
+    Vector dir = GetVelocity();
+    Vector center = GetCenter().ToVector();
+    Vector offset = dir.rotate(deg2rad(90)).norm() * GetRadius() / 2;
+
+    CAsteroid shatter1(m_degree + 1);
+    shatter1.MoveBy(center + offset);
+    shatter1.SetVelocity(dir.rotate(shatterAngle) * speedFactor);
+
+    CAsteroid shatter2(m_degree + 1);
+    shatter2.MoveBy(center - offset);
+    shatter2.SetVelocity(dir.rotate(-shatterAngle) * speedFactor);
+
+    shatters.push_back(std::move(shatter1));
+    shatters.push_back(std::move(shatter2));
+  }
+
+  return shatters;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///
+CShape CAsteroid::CreateAsteroid(int degree)
+{
+  const int vertsCount = 10;
+
+  float maxRadius = 100;
+  float minRadius = 50;
+
+  float decayFactor = static_cast<float>(pow(sqrt(SHATTERS_COUNT), degree));
+
+  minRadius /= decayFactor;
+  maxRadius /= decayFactor;
+
+  return CreateStarShape(vertsCount, minRadius, maxRadius);
 }
 
 //////////////////////////////////////////////////////////////////////////
